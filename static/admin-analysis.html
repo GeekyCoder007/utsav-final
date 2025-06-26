@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Dashboard</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f0f0; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2 { color: #333; }
+        ul { padding-left: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #eee; }
+    </style>
+</head>
+<body>
+    <h1>Event Summary Dashboard</h1>
+    <div id="dashboard"></div>
+
+    <script>
+        async function loadDashboard() {
+            const res = await fetch('http://127.0.0.1:8000/dashboard-data');
+            const data = await res.json();
+
+            const html = `
+                <div class="section">
+                    <h2>Total Participants</h2>
+                    <p>Total: ${data.total_participants}</p>
+                    <ul>${Object.entries(data.gender_count).map(([g, c]) => `<li>${g}: ${c}</li>`).join("")}</ul>
+                </div>
+
+                <div class="section">
+                    <h2>Staying at Venue</h2>
+                    <p>Total: ${data.staying_count}</p>
+                    <ul>${Object.entries(data.staying_gender).map(([g, c]) => `<li>${g}: ${c}</li>`).join("")}</ul>
+                </div>
+
+                <div class="section">
+                    <h2>Meal Summary</h2>
+                    ${Object.entries(data.meal_summary).map(([date, meals]) => `
+                        <h4>${date}</h4>
+                        <ul>${Object.entries(meals).map(([meal, count]) => `<li>${meal}: ${count}</li>`).join("")}</ul>
+                    `).join("")}
+                </div>
+
+                <div class="section">
+                    <h2>Tea/Coffee Preferences</h2>
+                    <ul>${Object.entries(data.tea_coffee_summary).map(([drink, sugars]) =>
+                        `<li>${drink}:<ul>${Object.entries(sugars).map(([sugar, count]) => `<li>${sugar}: ${count}</li>`).join("")}</ul></li>`
+                    ).join("")}</ul>
+                </div>
+
+                <div class="section">
+                    <h2>Need Assistance</h2>
+                    <p>Total: ${data.assistance_needed.count}</p>
+                    <ul>${Object.entries(data.assistance_needed.by_gender).map(([g, c]) => `<li>${g}: ${c}</li>`).join("")}</ul>
+                    <table><tr><th>Name</th><th>Gender</th><th>Phone</th></tr>
+                        ${data.assistance_needed.list.map(p => `<tr><td>${p.name}</td><td>${p.gender}</td><td>${p.phone}</td></tr>`).join("")}
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h2>Need Cot</h2>
+                    <p>Total: ${data.cot_needed.count}</p>
+                    <ul>${Object.entries(data.cot_needed.by_gender).map(([g, c]) => `<li>${g}: ${c}</li>`).join("")}</ul>
+                    <ul>${data.cot_needed.list.map(p => `<li>${p.name} (${p.gender})</li>`).join("")}</ul>
+                </div>
+            `;
+
+            document.getElementById("dashboard").innerHTML = html;
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
