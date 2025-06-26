@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utsav Location - Gurukul Utsav</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Ensure Tailwind is loaded before configuration
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof tailwind !== 'undefined') {
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            fontFamily: {
+                                inter: ['Inter', 'sans-serif'],
+                            },
+                            colors: {
+                                'dark-bg-location': '#100f1c', // Specific dark background for this page
+                                'dark-card-location': 'rgba(47, 47, 74, 0.6)',
+                                'accent-orange': '#ff7f50',
+                                'accent-blue': '#6a0dad',
+                                'spiritual-gold': '#ffb703',
+                                // Light theme colors will be managed via CSS classes
+                            }
+                        },
+                    }
+                };
+            } else {
+                console.error("Tailwind CSS not loaded. Cannot apply custom configuration.");
+            }
+        });
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ------------------------------ */
+        /* CSS Variables for Theming      */
+        /* ------------------------------ */
+        :root {
+            --text-color-primary-dark: #e0e0e0;
+            --text-color-primary-light: #333333;
+            --sparkle-color-dark: rgba(255, 255, 255, 0.9); /* Subtle white for page sparkles */
+            --sparkle-color-light: rgba(255, 200, 0, 0.7); /* Not used, sparkles hidden in light mode */
+        }
+        .light {
+            --text-color-primary-dark: #333333;
+            /* Page sparkles are hidden in light mode, so no override needed for --sparkle-color-dark */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #100f1c; /* Deeper dark background */
+            color: #e0e0e0; /* Light text */
+            transition: background-color 0.5s ease, color 0.5s ease;
+            background-image: linear-gradient(135deg, #1a1a2e 0%, #0d0d1a 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden; /* Prevent scrollbar from sparkles and flowers */
+        }
+
+        .light body {
+            background-color: #FFFACD; /* Banana yellow fallback */
+            color: #333333;
+            background-image:
+                url('https://www.transparenttextures.com/patterns/clean-textile.png'),
+                linear-gradient(135deg, #FFFACD 0%, #F5DEB3 100%);
+            background-size: auto, cover;
+        }
+
+        /* Body pseudo-element for background patterns (Ganesh outline, swirls) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                url('https://i.imgur.com/gK9qN7f.png'), /* Central Ganesh ji outline */
+                url('https://i.imgur.com/K3pW1yZ.png'), /* Swirl pattern top-left */
+                url('https://i.imgur.com/K3pW1yZ.png'); /* Swirl pattern bottom-right */
+            background-position: center center, top 5% left 5%, bottom 5% right 5%;
+            background-repeat: no-repeat, no-repeat, no-repeat;
+            background-size: 60% auto, 20% auto, 20% auto; /* Adjust sizes for effect */
+            opacity: 0.05; /* Very subtle in dark mode */
+            filter: invert(100%); /* Invert for dark theme contrast */
+            z-index: -1; /* Behind other content */
+            pointer-events: none; /* Do not interfere with clicks */
+            transition: opacity 0.5s ease, filter 0.5s ease, background-image 0.5s ease;
+        }
+
+        /* Light theme body pseudo-element adjustments */
+        .light body::before {
+            filter: grayscale(10%) brightness(110%) opacity(0.08);
+            opacity: 0.08;
+        }
+
+        /* Element of Surprise for Light Mode: Subtle Pulsating Glow */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(255, 230, 180, 0.4) 0%, rgba(255, 230, 180, 0) 70%);
+            transform: translate(-50%, -50%);
+            z-index: -2;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            animation: none;
+            pointer-events: none;
+        }
+
+        .light body::after {
+            opacity: 1;
+            animation: pulse-glow 6s infinite ease-in-out alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { width: 50vw; height: 50vw; opacity: 0.2; }
+            50% { width: 60vw; height: 60vw; opacity: 0.35; }
+            100% { width: 50vw; height: 50vw; opacity: 0.2; }
+        }
+
+        /* Container for the main layout */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px; /* Adjusted max width for better map focus */
+            margin: auto;
+            padding: 2rem 1rem;
+            position: relative;
+            z-index: 10; /* Above background elements and sparkles */
+            flex-grow: 1; /* Allow container to take available space */
+        }
+
+        /* Header styles */
+        header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-gradient {
+            background: linear-gradient(90deg, #ff7f50 0%, #6a0dad 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Style for the Hall Name */
+        #location-name {
+            font-size: 3rem; /* text-5xl equivalent */
+            line-height: 1; /* Adjust line height for big text */
+            font-weight: 800; /* font-extrabold equivalent */
+            color: #ffb703; /* spiritual-gold */
+            transition: color 0.5s ease;
+            text-align: center; /* Ensure it's centered */
+            margin-top: 1rem; /* Space below previous paragraph */
+            /* New: Hall Name Glow */
+            animation: hall-glow 3s infinite ease-in-out alternate;
+        }
+
+        .light #location-name {
+            color: #B8860B; /* Darker goldenrod for contrast in light mode */
+            animation: light-hall-glow 3s infinite ease-in-out alternate; /* Light theme specific glow */
+        }
+
+        /* Keyframes for Hall Name Glow (Dark Mode) */
+        @keyframes hall-glow {
+            0% {
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                text-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 215, 0, 0.8);
+            }
+            100% {
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.4);
+            }
+        }
+
+        /* Keyframes for Hall Name Glow (Light Mode) */
+        @keyframes light-hall-glow {
+            0% {
+                text-shadow: 0 0 8px rgba(184, 134, 11, 0.6), 0 0 15px rgba(184, 134, 11, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(184, 134, 11, 0.9), 0 0 30px rgba(184, 134, 11, 0.6);
+            }
+            100% {
+                text-shadow: 0 0 8px rgba(184, 134, 11, 0.6), 0 0 15px rgba(184, 134, 11, 0.3);
+            }
+        }
+
+
+        /* Map Container Styles (now an anchor tag with background image) */
+        .map-container {
+            background-color: var(--dark-card-location); /* Still applies to the container for background effect */
+            border-radius: 1.5rem;
+            padding: 0; /* Remove padding for iframe to fill */
+            width: 100%;
+            aspect-ratio: 16 / 9; /* Widescreen aspect ratio for the map */
+            display: flex; /* Flex to center content */
+            flex-direction: column; /* Stack icon and text */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; /* Cursor indicates interactivity */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease, border 0.3s ease;
+            border: 4px solid #6a0dad; /* Accent blue border */
+            position: relative;
+            overflow: hidden; /* Ensure rounded corners for background image */
+            text-decoration: none; /* Remove underline for the anchor tag */
+            background-size: cover; /* Cover the container with the image */
+            background-position: center; /* Center the background image */
+            color: #e0e0e0; /* Default text color for overlay */
+        }
+
+        .light .map-container {
+            background-color: rgba(255, 250, 230, 0.95);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: #8A2BE2; /* Light theme purple border */
+            color: #333333; /* Darker text for overlay in light mode */
+        }
+
+        .map-container:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            border-color: #ff7f50; /* Orange border on hover */
+        }
+        .light .map-container:hover {
+            border-color: #E67A4F; /* Lighter orange on hover in light mode */
+        }
+
+        .map-container:active {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+        }
+
+        /* Styles for text and icon overlay within the map-container */
+        .map-container .map-overlay-text {
+            text-shadow: 0 0 5px rgba(0,0,0,0.8); /* Add shadow for readability over image */
+        }
+        .map-container svg {
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.8)); /* Shadow for icon for readability */
+        }
+
+
+        /* Toggle Button & Back Button Container */
+        .top-buttons-container {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            right: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .toggle-button, .back-button {
+            background-color: #2f2f4a;
+            color: #e0e0e0;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px; /* Tailwind's rounded-full */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            text-decoration: none; /* Remove underline for anchor tag buttons */
+            display: inline-flex; /* Align icon and text */
+            align-items: center;
+            gap: 0.5rem; /* Space between icon and text */
+        }
+
+        .toggle-button:hover, .back-button:hover {
+            background-color: #3a3a5a; /* Slightly lighter on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .light .toggle-button, .light .back-button {
+             background-color: #f0e68c;
+             color: #333333;
+        }
+        .light .toggle-button:hover, .light .back-button:hover {
+            background-color: #e0d07c;
+        }
+
+
+        /* Background Sparkle Overlay and Sparkle styles */
+        #page-sparkle-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1; /* Below content, above body background */
+            overflow: hidden;
+            visibility: visible; /* Default to visible in dark mode */
+        }
+
+        .light #page-sparkle-overlay {
+            visibility: hidden; /* Hide in light mode */
+        }
+
+        .page-sparkle {
+            position: absolute;
+            background-color: var(--sparkle-color-dark); /* Subtle white color for page sparkles */
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: page-sparkle-fade var(--sparkle-duration, 2s) forwards ease-out;
+            will-change: transform, opacity;
+            box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.5); /* Subtle glow for stars */
+        }
+
+        @keyframes page-sparkle-fade {
+            0% { opacity: 0; transform: scale(0); }
+            20% { opacity: 0.9; transform: scale(1.2); }
+            80% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        /* Flower Overlay and Flower Styles */
+        #flower-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99; /* Above background sparkles, below main content */
+            overflow: hidden;
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.5s ease-out;
+        }
+
+        #flower-overlay.active {
+            opacity: 1; /* Fade in when active */
+        }
+
+        .flower {
+            position: absolute;
+            background: radial-gradient(circle at center, var(--flower-color-light) 0%, var(--flower-color-dark) 50%, transparent 100%);
+            border-radius: 50%; /* Default to circular shape for simplicity */
+            opacity: 0;
+            animation: flower-bloom 3s forwards ease-out; /* Flower animation lasts 3 seconds */
+            will-change: transform, opacity;
+        }
+
+        @keyframes flower-bloom {
+            0% {
+                opacity: 0;
+                transform: translate(var(--x), var(--y)) scale(0) rotate(0deg);
+            }
+            20% {
+                opacity: 0.8;
+                transform: translate(var(--x), var(--y)) scale(1) rotate(var(--rotate-deg));
+            }
+            80% {
+                opacity: 0.7;
+                transform: translate(var(--x), var(--y)) scale(0.8) rotate(var(--rotate-deg));
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--x), var(--y)) scale(0.2) rotate(var(--rotate-deg));
+            }
+        }
+
+        /* Footer styles */
+        footer {
+            margin-top: 4rem;
+            padding: 2rem 1rem;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            font-size: 0.9rem;
+            color: #d0d0d0;
+            transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+            width: 100%;
+            position: relative; /* For z-index to stay above sparkles */
+            z-index: 10;
+        }
+        .light footer {
+            background-color: rgba(255, 250, 230, 0.75);
+            border-top-color: rgba(0, 0, 0, 0.08);
+            color: #444444;
+        }
+
+        /* Style for the full address */
+        #full-address {
+            font-size: 1.125rem; /* text-lg */
+            line-height: 1.6;
+            color: #e0e0e0; /* Default text color */
+            margin-top: 0.5rem; /* Space from previous text */
+            transition: color 0.5s ease;
+            text-align: center;
+        }
+        .light #full-address {
+            color: #4A4A4A; /* Darker in light mode */
+        }
+    </style>
+</head>
+<body class="bg-dark-bg-location text-gray-100">
+
+    <div class="top-buttons-container">
+        <a href="/" class="back-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" clip-rule="evenodd" />
+            </svg>
+            Home
+        </a>
+        <button id="theme-toggle" class="toggle-button">
+            Toggle Theme
+        </button>
+    </div>
+
+    <div class="main-container">
+        <header>
+            <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold mb-4 header-gradient">
+                <span id="typewriter-main-title"></span>
+            </h1>
+            <p id="location-name" class="text-7xl font-extrabold text-spiritual-gold opacity-0">
+                <!-- Typed content for hall name -->
+            </p>
+            <!-- New element for full address -->
+            <p id="full-address" class="text-lg text-gray-300 opacity-0 mt-4"></p>
+        </header>
+
+        <main class="w-full flex justify-center items-center flex-grow">
+            <!-- Google Maps Image with Link -->
+            <a href="https://maps.app.goo.gl/x58ozPdoCKcAzTNu5" target="_blank" rel="noopener noreferrer"
+               class="map-container flex flex-col items-center justify-center p-4"
+               style="background-image: url('static/map.png');"> <!-- IMPORTANT: Replace 'static/map-placeholder.jpg' with your actual image path -->
+                <!-- Optional: Icon and text overlay for clarity -->
+                <svg class="w-20 h-20 text-white opacity-75 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0L6.343 16.657A8 8 0 1117.657 16.657z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <p class="text-white text-lg font-bold mt-2 opacity-75 group-hover:opacity-100 transition-opacity duration-300 map-overlay-text">Click to view on Google Maps</p>
+            </a>
+        </main>
+    </div>
+
+    <footer>
+        <p>Gurukul Utsav © 2025</p>
+    </footer>
+
+    <!-- Background Sparkle Overlay -->
+    <div id="page-sparkle-overlay"></div>
+
+    <!-- Flower Overlay -->
+    <div id="flower-overlay"></div>
+
+    <script>
+        // JavaScript for theme toggling
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            const htmlElement = document.documentElement;
+            const toggleButton = document.getElementById('theme-toggle');
+
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                htmlElement.classList.add('light');
+                toggleButton.textContent = 'Dark Theme';
+                stopPageSparkles(); // Stop page sparkles in light mode
+            } else {
+                htmlElement.classList.remove('light');
+                htmlElement.classList.add('dark');
+                toggleButton.textContent = 'Light Theme';
+                startPageSparkles(); // Start page sparkles in dark mode
+            }
+        });
+
+        // --- Typewriter Animation Logic ---
+        const textsToType = [
+            { elementId: 'typewriter-main-title', text: 'Utsav Location', isMainHeader: true },
+            { elementId: 'location-name', text: 'Swapnapurti Hall' }
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        const typingSpeed = 120; // milliseconds per character (longer)
+        const lineDelay = 1500; // milliseconds delay between lines (longer)
+
+        function typeWriter() {
+            if (textIndex < textsToType.length) {
+                const current = textsToType[textIndex];
+                const targetElement = document.getElementById(current.elementId);
+
+                // Add typewriter cursor class only for the current typing element
+                const allTypewriterElements = document.querySelectorAll('#typewriter-main-title span, #location-name, #full-address'); // Include full-address for cursor management
+                allTypewriterElements.forEach(el => {
+                    if (el.id === current.elementId) {
+                        el.classList.remove('typewriter-complete');
+                        el.classList.add('typewriter-text');
+                    } else {
+                        el.classList.remove('typewriter-text');
+                        el.classList.add('typewriter-complete'); // Ensure previous elements' cursors are gone
+                    }
+                });
+
+                if (charIndex < current.text.length) {
+                    targetElement.textContent += current.text.charAt(charIndex);
+                    targetElement.classList.remove('opacity-0'); // Make visible as text appears
+                    targetElement.classList.add('opacity-100');
+                    charIndex++;
+                    setTimeout(typeWriter, typingSpeed);
+                } else {
+                    targetElement.classList.add('typewriter-complete'); // Hide cursor for current element
+                    if (current.isMainHeader) {
+                        targetElement.classList.add('header-gradient'); // Apply gradient to main title
+                    }
+
+                    // If 'location-name' just finished typing, show the full address instantly
+                    if (current.elementId === 'location-name') {
+                        const fullAddressElement = document.getElementById('full-address');
+                        const fullAddressText = 'Swapnapurti Hall, Paud Rd, behind MIT College, near Shilpa Housing Society, Rambaug Colony, Kothrud, Pune, Maharashtra 411038';
+                        fullAddressElement.textContent = fullAddressText;
+                        fullAddressElement.classList.remove('opacity-0');
+                        fullAddressElement.classList.add('opacity-100');
+                    }
+
+                    charIndex = 0;
+                    textIndex++;
+                    if (textIndex < textsToType.length) {
+                        setTimeout(typeWriter, lineDelay); // Delay before next line
+                    } else {
+                        // All typing complete, now trigger flower animation
+                        startFlowerAnimation();
+                    }
+                }
+            }
+        }
+
+        // --- Flower Animation Logic ---
+        const flowerColors = [
+            'rgba(255, 192, 203, 0.8)', // Light Pink
+            'rgba(173, 216, 230, 0.8)', // Light Blue
+            'rgba(144, 238, 144, 0.8)', // Light Green
+            'rgba(255, 255, 0, 0.8)',   // Yellow
+            'rgba(255, 99, 71, 0.8)',   // Tomato (reddish-orange)
+            'rgba(238, 130, 238, 0.8)'  // Violet
+        ];
+
+        function createFlower() {
+            const flowerOverlay = document.getElementById('flower-overlay');
+            if (!flowerOverlay) return;
+
+            const flower = document.createElement('span');
+            flower.classList.add('flower');
+
+            const size = Math.random() * 30 + 20; // Flowers between 20px and 50px (bigger)
+            flower.style.width = `${size}px`;
+            flower.style.height = `${size}px`;
+
+            const randomColorIndex = Math.floor(Math.random() * flowerColors.length);
+            const color = flowerColors[randomColorIndex];
+            // Use CSS variables for flower colors to leverage radial gradient
+            flower.style.setProperty('--flower-color-light', color);
+            flower.style.setProperty('--flower-color-dark', color.replace(/[^,]+\)/, '0.5)')); // Slightly darker version
+
+            const x = Math.random() * 100; // % of viewport width
+            const y = Math.random() * 100; // % of viewport height
+            flower.style.left = `${x}vw`;
+            flower.style.top = `${y}vh`;
+
+            flower.style.setProperty('--x', `${(Math.random() - 0.5) * 300}px`); // Increased X movement
+            flower.style.setProperty('--y', `${(Math.random() - 0.5) * 300}px`); // Increased Y movement
+            flower.style.setProperty('--rotate-deg', `${Math.random() * 720 - 360}deg`); // Random rotation
+
+            flower.style.animationDelay = `${Math.random() * 0.5}s`; // Staggered appearance
+            flower.style.animationDuration = `3s`; // Individual flower animation lasts 3 seconds
+
+            flowerOverlay.appendChild(flower);
+
+            flower.addEventListener('animationend', () => {
+                flower.remove();
+            });
+        }
+
+        let flowerAnimationTimeout;
+        let flowerCreationInterval;
+
+        function startFlowerAnimation() {
+            const flowerOverlay = document.getElementById('flower-overlay');
+            if (!flowerOverlay) return;
+
+            flowerOverlay.classList.add('active'); // Fade in the overlay
+
+            // Generate initial burst of flowers
+            for (let i = 0; i < 100; i++) { // Generate 100 flowers quickly
+                createFlower();
+            }
+
+            // Continue generating flowers for 3 seconds
+            let flowersCreated = 0;
+            flowerCreationInterval = setInterval(() => {
+                if (flowersCreated < 200) { // Generate up to 200 more flowers over the interval
+                    createFlower();
+                    flowersCreated++;
+                } else {
+                    clearInterval(flowerCreationInterval);
+                }
+            }, 30); // Create a flower every 30ms for a denser rain effect
+
+            flowerAnimationTimeout = setTimeout(() => {
+                clearInterval(flowerCreationInterval); // Stop creating new flowers
+                flowerOverlay.classList.remove('active'); // Fade out the overlay
+                // Existing flowers will remove themselves via animationend
+            }, 3000); // Effect lasts for 3 seconds
+        }
+
+        // --- Page Sparkle Generation Logic (General background sparkles) ---
+        const createPageSparkle = () => {
+            const sparkleOverlay = document.getElementById('page-sparkle-overlay');
+            if (!sparkleOverlay || document.documentElement.classList.contains('light')) {
+                return;
+            }
+
+            const sparkle = document.createElement('span');
+            sparkle.classList.add('page-sparkle');
+
+            const size = Math.random() * 8 + 4; // Size between 4px and 12px
+            sparkle.style.width = `${size}px`;
+            sparkle.style.height = `${size}px`;
+
+            const x = Math.random() * sparkleOverlay.offsetWidth;
+            const y = Math.random() * sparkleOverlay.offsetHeight;
+            sparkle.style.left = `${x}px`;
+            sparkle.style.top = `${y}px`;
+
+            sparkle.style.setProperty('--sparkle-duration', `${Math.random() * 2 + 2}s`); // 2 to 4 seconds
+            sparkle.style.animationDelay = `${Math.random() * 0.5}s`;
+
+            sparkleOverlay.appendChild(sparkle);
+
+            sparkle.addEventListener('animationend', () => {
+                sparkle.remove();
+            });
+        };
+
+        let pageSparkleInterval;
+
+        const startPageSparkles = () => {
+            if (pageSparkleInterval) clearInterval(pageSparkleInterval);
+            const sparkleOverlay = document.getElementById('page-sparkle-overlay');
+            if (sparkleOverlay) sparkleOverlay.style.visibility = 'visible';
+            pageSparkleInterval = setInterval(createPageSparkle, 100);
+        };
+
+        const stopPageSparkles = () => {
+            if (pageSparkleInterval) {
+                clearInterval(pageSparkleInterval);
+                pageSparkleInterval = null;
+            }
+            const sparkleOverlay = document.getElementById('page-sparkle-overlay');
+            if (sparkleOverlay) sparkleOverlay.style.visibility = 'hidden';
+            document.querySelectorAll('.page-sparkle').forEach(s => s.remove());
+        };
+
+        // Initial setup on page load
+        window.onload = function() {
+            const htmlElement = document.documentElement;
+            const toggleButton = document.getElementById('theme-toggle');
+
+            // Set initial theme for the toggle button text
+            if (htmlElement.classList.contains('dark')) {
+                toggleButton.textContent = 'Light Theme';
+                startPageSparkles(); // Start page sparkles for dark mode
+            } else {
+                toggleButton.textContent = 'Dark Theme';
+                stopPageSparkles(); // Stop page sparkles for light mode
+            }
+
+            // Observe theme changes to stop/start sparkles dynamically
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'class') {
+                        if (htmlElement.classList.contains('dark')) {
+                            startPageSparkles();
+                        } else {
+                            stopPageSparkles();
+                        }
+                    }
+                });
+            });
+            observer.observe(htmlElement, { attributes: true });
+
+            // Start the typewriter animation on load
+            typeWriter();
+        };
+    </script>
+</body>
+</html>

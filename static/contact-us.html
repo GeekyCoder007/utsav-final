@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Gurukul Utsav</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Ensure Tailwind is loaded before configuration
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tailwind CSS configuration for custom font and colors
+            if (typeof tailwind !== 'undefined') {
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            fontFamily: {
+                                inter: ['Inter', 'sans-serif'],
+                            },
+                            colors: {
+                                'dark-bg': '#100f1c',
+                                'dark-card': 'rgba(47, 47, 74, 0.6)',
+                                'accent-orange': '#ff7f50',
+                                'accent-blue': '#6a0dad',
+                                'accent-green': '#20c997',
+                                'spiritual-gold': '#ffb703',
+                                // Neon colors for borders
+                                'neon-green': '#39FF14',
+                                'neon-blue': '#00FFFF',
+                                'neon-orange': '#FFA500',
+                            }
+                        },
+                    }
+                };
+            } else {
+                console.error("Tailwind CSS not loaded. Cannot apply custom configuration.");
+            }
+        });
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --text-color-primary-dark: #e0e0e0;
+        }
+
+        /* Base Body Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #100f1c;
+            color: #e0e0e0;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            background-image: linear-gradient(135deg, #1a1a2e 0%, #0d0d1a 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+            z-index: 0;
+            overflow-y: auto; /* Allow scrolling on the body */
+        }
+
+        /* Background patterns */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                url('https://i.imgur.com/gK9qN7f.png'),
+                url('https://i.imgur.com/K3pW1yZ.png'),
+                url('https://i.imgur.com/K3pW1yZ.png');
+            background-position: center center, top 5% left 5%, bottom 5% right 5%;
+            background-repeat: no-repeat, no-repeat, no-repeat;
+            background-size: 60% auto, 20% auto, 20% auto;
+            opacity: 0.05;
+            filter: invert(100%);
+            z-index: -1;
+            pointer-events: none;
+            transition: opacity 0.5s ease, filter 0.5s ease, background-image 0.5s ease;
+        }
+
+        /* Card base styles (consistent with homepage) */
+        .card {
+            position: relative;
+            background-color: var(--dark-card);
+            color: #e0e0e0;
+            border-width: 4px;
+            border-style: solid;
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.3s ease, transform 0.3s ease, backdrop-filter 0.5s ease;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            overflow: hidden; /* Important for containing scrolled content and pseudo-elements */
+            border-radius: 1.5rem; /* Ensure rounded corners from Tailwind config */
+        }
+
+        /* Webkit scrollbar styles */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #2f2f4a;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #ffb703;
+            border-radius: 10px;
+            border: 2px solid #2f2f4a;
+        }
+
+        /* Neon Border specific styles for 3 sides */
+        .card.three-side-border {
+            border: none; /* Remove default border from card itself */
+            padding: 1rem; /* Adjust padding to make space for the pseudo-element border */
+        }
+
+        .card.three-side-border::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            pointer-events: none;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            z-index: -1; /* Behind card content */
+
+            /* Default border properties for the pseudo-element */
+            border-style: solid;
+            border-width: 2px; /* Thinner border for 'fine cut' effect */
+            border-image-slice: 1; /* Essential for gradients */
+
+            /* Initially transparent, will be set by JS or specific classes */
+            border-color: transparent; /* Default */
+
+            /* Mask to hide the bottom border */
+            mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 2px), transparent calc(100% - 2px));
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 2px), transparent calc(100% - 2px));
+        }
+
+        /* Specific border colors for each card */
+        .card.border-neon-green::before {
+            border-image-source: linear-gradient(to right, #39FF14, #00FF00); /* Neon Green gradient */
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.4); /* Softer glow for thinner border */
+        }
+        .card.border-neon-blue::before {
+            border-image-source: linear-gradient(to right, #00FFFF, #00BFFF); /* Neon Blue gradient */
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.4); /* Softer glow for thinner border */
+        }
+        .card.border-neon-orange::before {
+            border-image-source: linear-gradient(to right, #FFA500, #FF4500); /* Neon Orange gradient */
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.4); /* Softer glow for thinner border */
+        }
+
+        /* Enhanced Hover Animations for Glassmorphism */
+        .card:hover {
+            transform: translateY(-8px) scale(1.02); /* Slightly less aggressive than homepage */
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.3), 0 6px 8px -3px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Hover effect for the 3-sided border */
+        .card.three-side-border:hover::before {
+            box-shadow: 0 0 20px var(--glow-color-hover, rgba(255,255,255,0.8)), 0 0 30px var(--glow-color-hover-intense, rgba(255,255,255,0.5)); /* More intense glow on hover */
+            animation: border-pulse 1.5s infinite alternate; /* Subtle pulse for the border glow */
+        }
+
+        @keyframes border-pulse {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        /* Define --glow-color-hover and --glow-color-hover-intense for each card */
+        .card.border-neon-green:hover::before { --glow-color-hover: rgba(57, 255, 20, 0.8); --glow-color-hover-intense: rgba(57, 255, 20, 0.5); }
+        .card.border-neon-blue:hover::before { --glow-color-hover: rgba(0, 255, 255, 0.8); --glow-color-hover-intense: rgba(0, 255, 255, 0.5); }
+        .card.border-neon-orange:hover::before { --glow-color-hover: rgba(255, 165, 0, 0.8); --glow-color-hover-intense: rgba(255, 165, 0, 0.5); }
+
+        /* Footer specific styles (consistent with homepage) */
+        footer {
+            margin-top: 4rem;
+            padding: 2rem 1rem;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            font-size: 0.9rem;
+            color: #d0d0d0;
+            transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-shlok {
+            font-size: 1.5rem;
+            font-style: italic;
+            margin: 0.5rem 0;
+            color: #ffb703;
+            transition: color 0.5s ease;
+            animation: golden-glow 3s infinite ease-in-out alternate;
+            text-align: center;
+        }
+
+        @keyframes golden-glow {
+            0% { text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.5); }
+            50% { text-shadow: 0 0 35px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 215, 0, 0.9); }
+            100% { text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.5); }
+        }
+
+        /* Paduka images (consistent with homepage) */
+        .paduka-images-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .paduka-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ffb703;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .paduka-image:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+        }
+        @media (min-width: 768px) {
+            .paduka-images-container {
+                flex-direction: row;
+                gap: 2.5rem;
+            }
+        }
+
+        /* Fullscreen background video */
+        #background-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -3; /* Behind all content and pseudo-elements */
+            background-size: cover;
+            /* Optional: Add a slight blur or darken effect to make content more readable */
+            filter: brightness(0.7) blur(1px); /* Darken and blur slightly */
+        }
+
+        /* Profile Detail Modal Styles */
+        #profile-detail-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002; /* Above all other content */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        #profile-detail-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .profile-detail-content {
+            position: relative;
+            background-color: rgba(47, 47, 74, 0.9); /* Dark glass card background */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2.5rem; /* Increased padding */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            max-width: 90vw;
+            width: 600px; /* Further increased width for bigger display */
+            max-height: 90vh; /* Ensure it fits on smaller screens */
+            overflow-y: auto; /* Allow scrolling if content overflows */
+            transform: scale(0.8);
+            opacity: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            overflow-x: hidden; /* Prevent horizontal scrollbar due to border animation */
+        }
+
+        #profile-detail-modal-overlay.active .profile-detail-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Animated Frame for Profile Detail Card */
+        .profile-detail-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            box-sizing: border-box;
+            pointer-events: none;
+            z-index: -1;
+
+            border: 4px solid transparent; /* Base transparent border */
+            border-image-slice: 1;
+            /* Define multiple linear gradients and animate their sizes */
+            border-image-source: linear-gradient(to right, #00FFFF, #39FF14); /* Base gradient */
+
+            /* Initial state for animation */
+            animation: none;
+        }
+
+        #profile-detail-modal-overlay.active .profile-detail-content::before {
+            animation: draw-border 1.5s forwards ease-in-out, pulse-glow-modal 2s infinite alternate; /* Start animation when active */
+        }
+
+        @keyframes draw-border {
+            0% {
+                border-image-source: linear-gradient(to right, transparent, transparent); /* Start with transparent border */
+                border-width: 0px;
+                box-shadow: 0 0 0 rgba(0,0,0,0);
+            }
+            25% {
+                border-image-source: linear-gradient(to right, #00FFFF, transparent); /* Left to right */
+                border-width: 4px 0 0 4px; /* Only top and left start */
+                box-shadow: 0 0 15px rgba(0,255,255,0.7);
+            }
+            50% {
+                border-image-source: linear-gradient(to right, #00FFFF, #39FF14); /* Full gradient */
+                border-width: 4px 4px 0 4px; /* Top, Right, Left */
+                box-shadow: 0 0 25px rgba(0,255,255,0.8), 0 0 40px rgba(57,255,20,0.5);
+            }
+            75% {
+                 border-image-source: linear-gradient(to right, #00FFFF, #39FF14); /* Full gradient */
+                 border-width: 4px 4px 4px 4px; /* All sides */
+                 box-shadow: 0 0 35px rgba(0,255,255,0.9), 0 0 50px rgba(57,255,20,0.6);
+            }
+            100% {
+                border-image-source: linear-gradient(to right, #00FFFF, #39FF14); /* Final gradient */
+                border-width: 4px; /* All sides */
+                box-shadow: 0 0 40px rgba(0,255,255,1), 0 0 60px rgba(57,255,20,0.7); /* Strong final glow */
+            }
+        }
+
+        @keyframes pulse-glow-modal {
+            0%, 100% {
+                box-shadow: 0 0 40px rgba(0,255,255,1), 0 0 60px rgba(57,255,20,0.7);
+            }
+            50% {
+                box-shadow: 0 0 55px rgba(0,255,255,1.2), 0 0 80px rgba(57,255,20,0.9);
+            }
+        }
+
+
+        .profile-detail-content .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #ff7f50; /* Accent orange */
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .profile-detail-content .close-button:hover {
+            color: #ff4500;
+            transform: scale(1.1);
+        }
+
+        .profile-detail-content img {
+            width: 180px; /* Larger image in pop-up, "LinkedIn sized" */
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ffb703; /* Spiritual gold border */
+            margin-bottom: 1.5rem; /* Increased margin below image */
+        }
+
+        .profile-detail-content h3 {
+            font-size: 2.8rem; /* Even larger font size for name */
+            font-weight: 900; /* Extra bold */
+            color: #FFFFFF; /* Bright white */
+            margin-bottom: 0.75rem; /* Adjusted margin */
+        }
+        .profile-detail-content p {
+            font-size: 1.4rem; /* Larger font size for other info */
+            font-weight: 700; /* Bold */
+            color: #FFFFFF; /* Bright white */
+            margin-bottom: 0.5rem; /* Adjusted margin */
+        }
+        .profile-detail-content p a {
+            color: #00FFFF; /* Neon blue for links in pop-up */
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .profile-detail-content p a:hover {
+            text-decoration: underline;
+            color: #39FF14; /* Neon green on hover */
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-gray-100 min-h-screen flex flex-col items-center p-4">
+    <!-- Fullscreen Background Video -->
+    <video autoplay loop muted id="background-video">
+        <source src="static/last-try.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="w-full max-w-4xl text-center flex-grow flex flex-col items-center">
+        <header class="mb-12">
+            <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold mb-4 header-gradient">
+                Contact Us
+            </h1>
+            <p class="text-lg text-gray-300">
+                We are here to help! Reach out through our various channels.
+            </p>
+            <!-- New instructional message -->
+            <p class="text-xl font-semibold text-spiritual-gold mt-4">Tap on a profile to enlarge it!</p>
+
+            <a href="/" class="mt-6 inline-block bg-accent-blue text-white py-3 px-8 rounded-full text-xl font-semibold shadow-lg hover:bg-accent-blue-dark transition duration-300">
+                Back to Home
+            </a>
+        </header>
+
+        <main class="grid grid-cols-1 gap-8 w-full max-w-2xl">
+            <!-- Contact Card 1: Utsav Related -->
+            <div class="card three-side-border border-neon-green p-6 rounded-2xl shadow-2xl group">
+                <h2 class="text-3xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
+                    Utsav Related
+                </h2>
+                <p class="text-lg text-gray-300 group-hover:text-gray-200 transition-colors duration-300 mb-4">
+                    Connect with our Utsav coordinators for various event-specific inquiries.
+                </p>
+                <div class="space-y-6 max-h-80 overflow-y-auto pr-4 custom-scrollbar">
+                    <!-- User Profile 1 -->
+                    <div class="contact-profile-item flex flex-col items-center space-y-2 p-3 bg-dark-card rounded-xl border border-gray-700 cursor-pointer transition-transform duration-200 hover:scale-[1.03] hover:shadow-lg"
+                         data-category="utsav" data-index="0">
+                        <img src="static/vikrant-kaka-profile-1.png" alt="Vikrant's Profile" class="w-28 h-28 rounded-full object-cover border-2 border-spiritual-gold">
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold">Vikrant Ponkshe</h3>
+                            <p class="text-gray-400 text-base">Utsav Coordinator | Website Manager</p>
+                            <p class="text-gray-400 text-base">Email: vikrantponkshe21@hotmail.com</p>
+                            <p class="text-gray-400 text-base">Phone: +91 96730 00903</p>
+                        </div>
+                    </div>
+                    <!-- User Profile 2 -->
+                    <div class="contact-profile-item flex flex-col items-center space-y-2 p-3 bg-dark-card rounded-xl border border-gray-700 cursor-pointer transition-transform duration-200 hover:scale-[1.03] hover:shadow-lg"
+                         data-category="utsav" data-index="1">
+                        <img src="static/kedar-pandit.jpg" alt="Kedar's Profile" class="w-28 h-28 rounded-full object-cover border-2 border-spiritual-gold">
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold">Kedar Pandit</h3>
+                            <p class="text-gray-400 text-base">Utsav Coordinator | Music</p>
+                            <p class="text-gray-400 text-base">Email: kedarpandit@gmail.com</p>
+                            <p class="text-gray-400 text-base">Phone: +91 91234 56789</p>
+                        </div>
+                    </div>
+                    <!-- User Profile 3 -->
+                    <div class="contact-profile-item flex flex-col items-center space-y-2 p-3 bg-dark-card rounded-xl border border-gray-700 cursor-pointer transition-transform duration-200 hover:scale-[1.03] hover:shadow-lg"
+                         data-category="utsav" data-index="2">
+                        <img src="static/shailesh-bhanage.png" alt="Shailesh's Profile" class="w-28 h-28 rounded-full object-cover border-2 border-spiritual-gold">
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold">Shailesh Bhanage</h3>
+                            <p class="text-gray-400 text-base">Utsav Coordinator</p>
+                            <p class="text-gray-400 text-base">Email: shailesh-bhanage@gmail.com</p>
+                            <p class="text-400 text-base">Phone: +91 87654 32109</p>
+                        </div>
+                    </div>
+                    <!-- User Profile 4 -->
+                    <div class="contact-profile-item flex flex-col items-center space-y-2 p-3 bg-dark-card rounded-xl border border-gray-700 cursor-pointer transition-transform duration-200 hover:scale-[1.03] hover:shadow-lg"
+                         data-category="utsav" data-index="3">
+                        <img src="static/joglekar-kaka.png" alt="Joglekar's Profile" class="w-28 h-28 rounded-full object-cover border-2 border-spiritual-gold">
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold">Suhas Joglekar</h3>
+                            <p class="text-gray-400 text-base">Commute Assistance</p>
+                            <p class="text-gray-400 text-base">Email: suhasjoglkar@gmail.com</p>
+                            <p class="text-gray-400 text-base">Phone: +91 76543 21098</p>
+                        </div>
+                    </div>
+                    <!-- User Profile 5 -->
+                    <div class="contact-profile-item flex flex-col items-center space-y-2 p-3 bg-dark-card rounded-xl border border-gray-700 cursor-pointer transition-transform duration-200 hover:scale-[1.03] hover:shadow-lg"
+                         data-category="utsav" data-index="4">
+                        <img src="static/karande-pfp.png" alt="Sranjay's Profile" class="w-28 h-28 rounded-full object-cover border-2 border-spiritual-gold">
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold">Sranjay Karande</h3>
+                            <p class="text-gray-400 text-base">Commute Assistance</p>
+                            <p class="text-gray-400 text-base">Email: sranjaykarande@gmail.com>
+                            <p class="text-gray-400 text-base">Phone: +91 65432 10987</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Card 2: Website / App Related -->
+            <div class="card three-side-border border-neon-blue p-6 rounded-2xl shadow-2xl mt-8 group">
+                <h2 class="text-3xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
+                    Website / App Related
+                </h2>
+                <p class="text-lg text-gray-300 group-hover:text-gray-200 transition-colors duration-300 mb-4">
+                    For technical support or feedback regarding our website and mobile application.
+                </p>
+                <div class="space-y-6 max-h-80 overflow-y-auto pr-4 custom-scrollbar">
+                    <!-- User Profile 1 -->
+                    <!-- <div class="contact-profile-item flex flex-col items-center space-y-2 p-3 bg-dark-card rounded-xl border border-gray-700 cursor-pointer transition-transform duration-200 hover:scale-[1.03] hover:shadow-lg"
+                         data-category="website" data-index="0">
+                        <img src="static/vikrant-kaka-profile-1.png" alt="Vikrant's Profile" class="w-28 h-28 rounded-full object-cover border-2 border-spiritual-gold">
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold">Vikrant Ponkshe</h3>
+                            <p class="text-gray-400 text-base">Utsav Coordinator | Website Manager</p>
+                            <p class="text-gray-400 text-base">Email: virantponshe@hotmail.com</p>
+                            <p class="text-gray-400 text-base">Phone: +91 96730 00903</p>
+                        </div>
+                    </div> -->
+                    <!-- User Profile 2 -->
+                    <div class="contact-profile-item flex flex-col items-center space-y-2 p-3 bg-dark-card rounded-xl border border-gray-700 cursor-pointer transition-transform duration-200 hover:scale-[1.03] hover:shadow-lg"
+                         data-category="website" data-index="1">
+                        <img src="static/self-me.png" alt="Aditya's Profile" class="w-28 h-28 rounded-full object-cover border-2 border-spiritual-gold">
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold">Aditya Paranjape</h3>
+                            <p class="text-gray-400 text-base">Coder | Developer | Data Management | Techie</p>
+                            <p class="text-gray-400 text-base">Email: paranjape_adi21@icloud.com</p>
+                            <p class="text-400 text-base">Phone: +91 9834725816</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Card 3: Media & Press -->
+            <div class="card three-side-border border-neon-orange p-6 rounded-2xl shadow-2xl mt-8 group">
+                <h2 class="text-3xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
+                    Media & Press
+                </h2>
+                <p class="text-lg text-gray-300 group-hover:text-gray-200 transition-colors duration-300">
+                    Members of the press, media houses, bloggers, and content creators are invited to cover the Gurukul Utsav. For press passes, media kits, interviews with organizers, or any other media-related inquiries, please reach out to our media relations team. We are committed to providing all necessary resources to facilitate comprehensive and engaging coverage of our event. We believe that widespread media coverage will help us share the spiritual and cultural richness of the Utsav with a broader audience.
+                    <br><br>
+                    Email: <a href="mailto:media@gurukulutsav.org" class="text-neon-orange hover:underline">media@gurukulutsav.org</a>
+                    <br>
+                    Phone: <a href="tel:+917654321098" class="text-neon-orange hover:underline">+91 7654 321 098</a>
+                    <br><br>
+                    Our media team is available to assist with requests during business hours, Monday to Friday. Please provide details about your organization and your specific request to help us process it efficiently. We look forward to collaborating with you to highlight the unique aspects of Gurukul Utsav and its profound impact on the community. Advanced notice is appreciated for interview requests to ensure availability of key personnel.
+                    <br><br>
+                    We also welcome suggestions for unique storytelling angles or special access requests that can enhance your coverage. Our goal is to make it as easy as possible for the media to capture the essence of the Utsav.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <footer class="mt-auto">
+        <p>Developed with love ❤️</p>
+        <div class="paduka-images-container">
+            <img src="static/logo.png" alt="Paduka Left" class="paduka-image">
+            <p class="footer-shlok">
+                गुरुर्ब्रह्मा गुरुर्विष्णुः गुरुर्देवो महेश्वरः ।<br>
+                गुरुः साक्षात् परब्रह्म तस्मै श्री गुरवे नमः ॥
+            </p>
+            <img src="static/logo.png" alt="Paduka Right" class="paduka-image">
+        </div>
+    </footer>
+
+    <!-- Profile Detail Modal Overlay -->
+    <div id="profile-detail-modal-overlay">
+        <div class="profile-detail-content">
+            <button class="close-button" id="close-profile-modal">&times;</button>
+            <img id="modal-profile-image" src="" alt="Profile Image">
+            <h3 id="modal-profile-name"></h3>
+            <p id="modal-profile-role"></p>
+            <p>Email: <a id="modal-profile-email" href=""></a></p>
+            <p>Phone: <a id="modal-profile-phone" href=""></a></p>
+        </div>
+    </div>
+
+    <script>
+        // Data for profiles
+        const profilesData = {
+            'utsav': [
+                {
+                    name: "Vikrant Ponkshe",
+                    role: "Utsav Coordinator | Website Manager",
+                    email: "vikrantponkshe21@hotmail.com",
+                    phone: "+91 96730 00903",
+                    image: "static/vikrant-kaka-profile-1.png"
+                },
+                {
+                    name: "Kedar Pandit",
+                    role: "Utsav Coordinator",
+                    email: "kedarpandit@gmail.com",
+                    phone: "+91 91234 56789",
+                    image: "static/kedar-pandit.jpg"
+                },
+                {
+                    name: "Shailesh Bhanage",
+                    role: "Utsav Coordinator",
+                    email: "shaileshbhanage@gmail.com",
+                    phone: "+91 87654 32109",
+                    image: "static/shailesh-bhanage.png"
+                },
+                {
+                    name: "Suhas Joglekar",
+                    role: "Commute Assistance",
+                    email: "sjoglekar@gmail.com",
+                    phone: "+91 76543 21098",
+                    image: "static/joglekar-kaka.png"
+                },
+                {
+                    name: "Sranjay Karande",
+                    role: "Commute Assistance",
+                    email: "skarande@gmail.com",
+                    phone: "+91 65432 10987",
+                    image: "static/karande-pfp.png"
+                }
+            ],
+            'website': [
+                {
+                    name: "Vikrant Ponkshe",
+                    role: "Website Management|Utsav Coordinator",
+                    email: "virantponshe@hotmail.com",
+                    phone: "+91 96730 00903",
+                    image: "static/vikrant-kaka-profile-1.png"
+                },
+                {
+                    name: "Aditya/Aryaan Paranjape",
+                    role: "Coder | Developer | Data Management | Techie",
+                    email: "paranjape_adi21@icloud.com",
+                    phone: "+91 9834725816",
+                    image: "static/self-me.png"
+                }
+            ]
+        };
+
+        // Get modal elements
+        const profileModalOverlay = document.getElementById('profile-detail-modal-overlay');
+        const modalProfileImage = document.getElementById('modal-profile-image');
+        const modalProfileName = document.getElementById('modal-profile-name');
+        const modalProfileRole = document.getElementById('modal-profile-role');
+        const modalProfileEmail = document.getElementById('modal-profile-email');
+        const modalProfilePhone = document.getElementById('modal-profile-phone');
+        const closeProfileModalButton = document.getElementById('close-profile-modal');
+
+        // Function to show the modal
+        function showProfileModal(profile) {
+            modalProfileImage.src = profile.image;
+            modalProfileImage.alt = profile.name + " Profile";
+            modalProfileName.textContent = profile.name;
+            modalProfileRole.textContent = profile.role;
+            modalProfileEmail.textContent = profile.email;
+            modalProfileEmail.href = `mailto:${profile.email}`;
+            modalProfilePhone.textContent = profile.phone;
+            modalProfilePhone.href = `tel:${profile.phone}`;
+            profileModalOverlay.classList.add('active');
+        }
+
+        // Add click event listeners to all profile items
+        document.querySelectorAll('.contact-profile-item').forEach(item => {
+            item.addEventListener('click', (event) => {
+                const category = item.dataset.category;
+                const index = parseInt(item.dataset.index);
+                const profile = profilesData[category][index];
+                if (profile) {
+                    showProfileModal(profile);
+                }
+            });
+        });
+
+        // Close button functionality
+        closeProfileModalButton.addEventListener('click', () => {
+            profileModalOverlay.classList.remove('active');
+        });
+
+        // Ensure the HTML element starts in dark mode on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.documentElement.classList.add('dark');
+            // Ensure no 'light' class is present
+            document.documentElement.classList.remove('light');
+        });
+    </script>
+</body>
+</html>

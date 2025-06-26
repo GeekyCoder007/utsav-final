@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gurukul Utsav</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind CSS configuration for custom font and colors
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'dark-bg': '#100f1c', // A deeper dark background for better glass effect contrast
+                        'dark-card': 'rgba(47, 47, 74, 0.6)', // Increased opacity for better contrast in dark mode
+                        // New light theme specific colors (used directly in CSS, less in tailwind.config)
+                        'accent-orange': '#ff7f50', // A vibrant orange for highlights
+                        'accent-blue': '#6a0dad', // A deep purple/blue for other accents
+                        'accent-green': '#20c997', // A vibrant green for a new option
+                        'spiritual-gold': '#ffb703', // A golden color for the religious vibe
+                    }
+                },
+            }
+        }
+    </script>
+    <style>
+        /* Import Inter font from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        /* CSS Variables for Theming - Added for better control, especially for sparkles */
+        :root {
+            --text-color-primary-dark: #e0e0e0;
+            --text-color-primary-light: #333333;
+            --sparkle-color-dark: rgba(255, 255, 255, 0.9); /* More opaque white for dark mode sparkles */
+            --sparkle-color-light: rgba(255, 200, 0, 0.7); /* Ochre-like for light mode sparkles */
+        }
+        .light {
+            --text-color-primary-dark: #333333; /* Overridden in light mode */
+            --sparkle-color-dark: rgba(255, 200, 0, 0.7); /* Overridden in light mode, but sparkles hidden via visibility rules */
+        }
+
+
+        /* Keyframes for the border glow animation */
+        @keyframes border-glow {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+        }
+
+        /* Keyframes for golden light effect on shlok (Dark Mode) */
+        @keyframes golden-glow {
+            0% {
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.5); /* More intense initial glow, more spread */
+                transform: scale(1);
+            }
+            50% {
+                text-shadow: 0 0 35px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 215, 0, 0.9); /* Maximum intensity, more spread */
+                transform: scale(1.03); /* Slightly larger scale for a more pronounced pulse */
+            }
+            100% {
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.5);
+                transform: scale(1);
+            }
+        }
+
+        /* Keyframes for ochre light effect on shlok (Light Mode) */
+        @keyframes light-golden-glow {
+            0% {
+                text-shadow: 0 0 20px rgba(255, 200, 0, 0.9), 0 0 40px rgba(255, 180, 0, 0.7); /* Brighter, more spread ochre */
+                transform: scale(1);
+            }
+            50% {
+                text-shadow: 0 0 40px rgba(255, 220, 0, 1), 0 0 70px rgba(255, 190, 0, 0.9); /* Max intensity ochre */
+                transform: scale(1.03);
+            }
+            100% {
+                text-shadow: 0 0 20px rgba(255, 200, 0, 0.9), 0 0 40px rgba(255, 180, 0, 0.7);
+                transform: scale(1);
+            }
+        }
+
+        /* Keyframes for subtle icon bounce */
+        @keyframes icon-bounce {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-5px) scale(1.1); /* Lift slightly and scale up */
+            }
+        }
+
+
+        /* Base styles for dark mode */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #100f1c; /* Deeper dark background */
+            color: #e0e0e0; /* Light text */
+            transition: background-color 0.5s ease, color 0.5s ease;
+            /* Adding a subtle gradient to the body for the glass effect to interact with */
+            background-image: linear-gradient(135deg, #1a1a2e 0%, #0d0d1a 100%);
+            overflow: hidden; /* Hide scrollbar during splash screen */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex; /* Use flexbox for main content centering and footer positioning */
+            flex-direction: column;
+            align-items: center; /* Horizontally center content */
+            padding: 1rem; /* Added general padding to body */
+            position: relative; /* Needed for body::before and body::after */
+            z-index: 0; /* Ensure body is a stacking context */
+        }
+
+        /* Body pseudo-element for background patterns (Ganesh outline, swirls) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                url('https://i.imgur.com/gK9qN7f.png'), /* Central Ganesh ji outline */
+                url('https://i.imgur.com/K3pW1yZ.png'), /* Swirl pattern top-left */
+                url('https://i.imgur.com/K3pW1yZ.png'); /* Swirl pattern bottom-right */
+            background-position: center center, top 5% left 5%, bottom 5% right 5%;
+            background-repeat: no-repeat, no-repeat, no-repeat;
+            background-size: 60% auto, 20% auto, 20% auto; /* Adjust sizes for effect */
+            opacity: 0.05; /* Very subtle in dark mode */
+            filter: invert(100%); /* Invert for dark theme contrast */
+            z-index: -1; /* Behind other content */
+            pointer-events: none; /* Do not interfere with clicks */
+            transition: opacity 0.5s ease, filter 0.5s ease, background-image 0.5s ease;
+        }
+
+        /* Splash Screen Styles */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #100f1c; /* Match dark body background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top of everything */
+            opacity: 1;
+            transition: opacity 0.5s ease-out; /* Fade out transition */
+        }
+
+        #splash-screen.fade-out {
+            opacity: 0;
+            pointer-events: none; /* Make it unclickable after fade out */
+        }
+
+        #guru-image {
+            /* Use min() to ensure responsiveness while maintaining a max desired size */
+            width: min(450px, 90vw);
+            height: min(450px, 90vw); /* Keep height equal to width for perfect circle, based on viewport width */
+            border-radius: 50%; /* Circular image */
+            object-fit: cover; /* Ensure image covers the circle */
+            border: 12px solid #ffb703; /* Thicker Spiritual gold border */
+            opacity: 0; /* Start hidden */
+            transform: scale(0.5); /* Start small */
+            /* New animation for guru image with growing aura */
+            animation: guru-image-appear 1.5s forwards ease-out;
+            animation-delay: 0.2s; /* Delay for a smoother start */
+        }
+
+        /* Keyframes for guru image appearance and aura growth */
+        @keyframes guru-image-appear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+                /* Initial aura: very subtle */
+                box-shadow: 0 0 5px 2px rgba(255, 183, 3, 0.2), 0 0 10px 4px rgba(255, 183, 3, 0.1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(0.85); /* Intermediate size */
+                /* Growing aura */
+                box-shadow: 0 0 30px 10px rgba(255, 183, 3, 0.6), 0 0 60px 20px rgba(255, 183, 3, 0.3);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                /* Full, bright aura */
+                box-shadow: 0 0 60px 25px rgba(255, 183, 3, 0.9), 0 0 120px 50px rgba(255, 183, 3, 0.5);
+            }
+        }
+
+
+        .card {
+            position: relative; /* Needed for pseudo-elements */
+            background-color: var(--dark-card); /* Now uses the updated dark-card from tailwind config */
+            color: #e0e0e0; /* Default light text for cards */
+            border-width: 4px; /* Ensure original thick border */
+            border-style: solid; /* Ensure original thick border */
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.3s ease, transform 0.3s ease, backdrop-filter 0.5s ease;
+            backdrop-filter: blur(15px); /* Apply initial glass effect */
+            -webkit-backdrop-filter: blur(15px); /* Safari support */
+            overflow: hidden; /* Crucial to contain pseudo-element animations within rounded borders */
+        }
+
+        .card svg {
+            transition: color 0.5s ease, transform 0.3s ease;
+        }
+        .card:hover svg {
+            animation: icon-bounce 0.6s ease-in-out; /* Apply bounce animation on hover */
+        }
+
+        .toggle-button {
+            background-color: #2f2f4a;
+            color: #e0e0e0;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Border Glow Animation */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            z-index: -1;
+            border-radius: inherit; /* Inherit border-radius from parent */
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.3s ease; /* Smooth fade-in/out */
+            background: conic-gradient(from var(--angle), transparent 0%, var(--glow-color) 20%, transparent 100%);
+            animation: rotate 4s linear infinite; /* Example animation for a dynamic glow */
+        }
+
+        /* Keyframes for rotating conic gradient */
+        @property --angle {
+            syntax: "<angle>";
+            inherits: false;
+            initial-value: 0deg;
+        }
+        @keyframes rotate {
+            to {
+                --angle: 360deg;
+            }
+        }
+
+        .card:hover::before {
+            opacity: 1; /* Show glow on hover */
+            animation: border-glow 2s infinite alternate, rotate 4s linear infinite; /* Apply both pulsate and rotate */
+        }
+
+        /* Specific glow colors for each card */
+        .card.border-accent-orange::before { --glow-color: #ff7f50; }
+        .card.border-accent-blue::before { --glow-color: #6a0dad; }
+        .card.border-accent-green::before { --glow-color: #20c997; }
+        .card.border-spiritual-gold::before { --glow-color: #ffb703; } /* For the new card */
+
+
+        /* Element of Surprise for Light Mode: Subtle Pulsating Glow */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0; /* Start small */
+            height: 0; /* Start small */
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(255, 230, 180, 0.4) 0%, rgba(255, 230, 180, 0) 70%); /* Soft, warm glow */
+            transform: translate(-50%, -50%);
+            z-index: -2; /* Below content and Ganesh outline */
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.5s ease; /* Smooth fade for theme change */
+            animation: none; /* No animation in dark mode */
+            pointer-events: none; /* Do not interfere with clicks */
+        }
+
+        .light body::after {
+            opacity: 1; /* Visible in light mode */
+            animation: pulse-glow 6s infinite ease-in-out alternate; /* Subtle, long pulse animation */
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                width: 50vw;
+                height: 50vw;
+                opacity: 0.2;
+            }
+            50% {
+                width: 60vw;
+                height: 60vw;
+                opacity: 0.35;
+            }
+            100% {
+                width: 50vw;
+                height: 50vw;
+                opacity: 0.2;
+            }
+        }
+
+        /* Specific styles for light mode activated by JS via the 'light' class on HTML */
+        .light body {
+            background-color: #FFFACD; /* Fallback for older browsers, a base banana yellow */
+            color: #333333; /* Dark text */
+            background-image:
+                url('https://www.transparenttextures.com/patterns/clean-textile.png'), /* Subtle texture */
+                linear-gradient(135deg, #FFFACD 0%, #F5DEB3 100%); /* Banana yellow gradient */
+            background-size: auto, cover; /* Adjust background sizes */
+        }
+
+        /* Adjust Ganesh image/patterns for light mode to blend with new warm background */
+        .light body::before {
+            filter: grayscale(10%) brightness(110%) opacity(0.08); /* Less inversion, more brightness, slightly increased opacity */
+            opacity: 0.08; /* Slightly more visible in light mode */
+            background-image:
+                url('https://i.imgur.com/gK9qN7f.png'), /* Central Ganesh ji outline */
+                url('https://i.imgur.com/K3pW1yZ.png'), /* Swirl pattern top-left */
+                url('https://i.imgur.com/K3pW1yZ.png'); /* Swirl pattern bottom-right */
+            background-position: center center, top 5% left 5%, bottom 5% right 5%;
+            background-repeat: no-repeat, no-repeat, no-repeat;
+            background-size: 60% auto, 20% auto, 20% auto; /* Adjust sizes for effect */
+        }
+
+
+        .light .card {
+            background-color: rgba(255, 250, 230, 0.9); /* More opaque, warm white glass */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Light shadow */
+            /* Text inside cards should be black in light mode */
+            color: #000000;
+        }
+        /* Specifically target h2 and p tags within light cards for black text */
+        .light .card h2,
+        .light .card p {
+            color: #000000; /* Ensure text is black */
+        }
+
+        /* Adjust border colors for light mode to maintain contrast and warmth */
+        .light .card.border-accent-orange {
+            border-color: #E67A4F; /* Deeper, warmer orange */
+        }
+        .light .card.border-accent-blue {
+            border-color: #8A2BE2; /* A rich, slightly brighter purple */
+        }
+        .light .card.border-accent-green {
+            border-color: #2ECC71; /* A natural, inviting green */
+        }
+        .light .card.border-spiritual-gold { /* For the new card in light mode */
+            border-color: #B8860B;
+        }
+
+        .light .card svg {
+            color: inherit; /* Inherit the dark text color from the card */
+        }
+
+        .light .toggle-button {
+             background-color: #f0e68c; /* Khaki-like warm yellow */
+             color: #333333;
+        }
+        .light .toggle-button:hover {
+            background-color: #e0d07c; /* Slightly darker on hover */
+        }
+
+        /* Header gradient always looks good, no specific light mode adjust for it */
+        .header-gradient {
+            background: linear-gradient(90deg, #ff7f50 0%, #6a0dad 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent; /* Fallback for browsers not supporting background-clip */
+        }
+
+        /* Enhanced Hover Animations for Glassmorphism */
+        .card:hover {
+            transform: translateY(-12px) scale(1.03); /* More lift and slight scale */
+            box-shadow: 0 25px 35px -8px rgba(0, 0, 0, 0.4), 0 10px 12px -7px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+            backdrop-filter: blur(25px); /* More blur on hover */
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        /* Dark mode specific hover effects */
+        .dark .card:hover {
+            background-color: rgba(61, 61, 94, 0.6); /* Slightly lighter and more opaque dark card on hover */
+        }
+
+        /* Light mode specific hover effects */
+        .light .card:hover {
+            background-color: rgba(255, 250, 230, 0.95); /* Slightly darker and more opaque light card on hover */
+            box-shadow: 0 25px 35px -8px rgba(0, 0, 0, 0.2), 0 10px 12px -7px rgba(0, 0, 0, 0.1); /* Lighter shadow for light mode */
+        }
+
+        .card:active {
+            transform: translateY(-4px) scale(0.98); /* Slight press effect */
+            transition: transform 0.1s ease-out; /* Faster transition for active state */
+        }
+
+        /* Typewriter specific styles */
+        .typewriter-text::after {
+            content: '|'; /* Blinking cursor */
+            display: inline-block;
+            animation: blinking-cursor 0.75s step-end infinite;
+            vertical-align: bottom; /* Align cursor to the bottom of the text */
+        }
+
+        .typewriter-complete::after {
+            content: ''; /* Hide cursor when typing is complete */
+            animation: none;
+        }
+
+        @keyframes blinking-cursor {
+            from, to { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* Specific styles for the new lines */
+        #shri-gurudeva-datta {
+            font-size: 1.875rem; /* text-3xl */
+            line-height: 2.25rem;
+            font-weight: 700; /* font-bold */
+            color: #ffb703; /* spiritual-gold */
+            transition: color 0.5s ease; /* For theme change */
+        }
+
+        .light #shri-gurudeva-datta {
+            color: #B8860B; /* A rich, dark goldenrod for light mode contrast */
+        }
+
+        #saharsha-swaagat {
+            font-size: 1.25rem; /* text-xl */
+            line-height: 1.75rem;
+            color: #a0a0a0; /* text-gray-400 equivalent */
+            transition: color 0.5s ease; /* For theme change */
+        }
+
+        .light #saharsha-swaagat {
+            color: #4A4A4A; /* Darker gray for better light mode contrast */
+        }
+
+        /* Footer specific styles */
+        footer {
+            margin-top: 4rem; /* Add some space above the footer */
+            padding: 2rem 1rem;
+            background-color: rgba(0, 0, 0, 0.3); /* Slightly darker for dark mode footer */
+            backdrop-filter: blur(5px); /* Light blur for glass effect */
+            -webkit-backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05); /* Subtle top border */
+            text-align: center;
+            font-size: 0.9rem;
+            color: #d0d0d0; /* Lighter gray text for dark mode footer */
+            transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+            width: 100%;
+            display: flex; /* Use flexbox to align shlok and images */
+            flex-direction: column; /* Stack items vertically by default */
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center items vertically */
+        }
+
+        .light footer {
+            background-color: rgba(255, 250, 230, 0.75); /* More opaque warm background for light mode footer */
+            border-top-color: rgba(0, 0, 0, 0.08);
+            color: #444444; /* Darker gray text for light mode footer */
+        }
+
+        .footer-shlok {
+            font-size: 1.5rem; /* Increased font size for shlok */
+            font-style: italic;
+            margin: 0.5rem 0; /* Adjusted margin */
+            color: #ffb703; /* Spiritual gold for shlok */
+            transition: color 0.5s ease;
+            animation: golden-glow 3s infinite ease-in-out alternate; /* Apply dark mode golden glow animation */
+            text-align: center; /* Ensure shlok text is centered */
+        }
+
+        .light .footer-shlok {
+            color: #B8860B; /* A rich, dark goldenrod for light mode */
+            animation: light-golden-glow 3s infinite ease-in-out alternate; /* Apply light mode ochre glow animation */
+        }
+
+        /* Styles for paduka images */
+        .paduka-images-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem; /* Space between images and shlok */
+            margin-top: 1rem; /* Space above the container */
+            flex-wrap: wrap; /* Allow images to wrap on smaller screens */
+        }
+
+        .paduka-image {
+            width: 120px; /* Fixed size for padukas */
+            height: 120px;
+            border-radius: 50%; /* Make it circular */
+            object-fit: cover; /* Ensure image covers the circle */
+            border: 4px solid #ffb703; /* Golden border for padukas */
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); /* Subtle golden glow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .paduka-image:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 1);
+        }
+
+        /* Sparkle Overlay and Sparkle styles */
+        #sparkle-overlay {
+            position: absolute; /* Position relative to its parent (#main-content) */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allow clicks to pass through */
+            z-index: 1; /* Above background patterns, below main content elements */
+            overflow: hidden; /* Contain sparkles within the main content area */
+            /* Hide sparkles completely in light mode */
+            visibility: var(--sparkle-overlay-visibility, visible); /* Controlled by JS or CSS variable */
+        }
+        /* Explicitly hide sparkle overlay in light mode */
+        .light #sparkle-overlay {
+            visibility: hidden;
+        }
+
+
+        .sparkle {
+            position: absolute;
+            background-color: var(--sparkle-color-dark); /* Default for dark theme */
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: sparkle-fade var(--sparkle-duration, 2s) forwards ease-out;
+            will-change: transform, opacity; /* Optimize for animation */
+        }
+
+        /* Keyframes for sparkle animation */
+        @keyframes sparkle-fade {
+            0% { opacity: 0; transform: scale(0); }
+            20% { opacity: 0.9; transform: scale(1.2); } /* Stronger peak opacity and scale */
+            80% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        /* Responsive adjustments for paduka images */
+        @media (min-width: 768px) { /* On medium and larger screens */
+            .paduka-images-container {
+                flex-direction: row; /* Align in a row */
+                gap: 2.5rem; /* More space between images and shlok */
+            }
+        }
+
+        /* Video Modal Styles - REVISED for bigger size and smoother fade/scale animation */
+        #video-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); /* Slightly more opaque background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0; /* Start hidden */
+            pointer-events: none; /* Do not block events when hidden */
+            transition: opacity 0.4s ease-in-out; /* Smooth fade for overlay */
+        }
+
+        #video-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto; /* Allow interaction when active */
+        }
+
+        .video-modal-content {
+            background-color: rgba(47, 47, 74, 0.9); /* Dark background with high transparency */
+            padding: 2rem; /* Slightly more padding */
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7); /* Stronger shadow */
+            position: relative;
+            width: 80vw; /* Wider */
+            max-width: 1000px; /* Max width for large screens */
+            height: auto;
+            max-height: 90vh; /* Max height for responsiveness */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 3px solid #6a0dad; /* Thicker accent blue border */
+            transform: scale(0.8); /* Start slightly scaled down */
+            opacity: 0; /* Start hidden */
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out; /* Smooth scale and fade */
+            backdrop-filter: blur(25px); /* Stronger glass effect */
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        #video-modal-overlay.active .video-modal-content {
+            transform: scale(1); /* Scale to full size */
+            opacity: 1;
+        }
+
+        .video-modal-content video {
+            width: min(800px, 100%); /* Max width of 800px or 100% of modal content */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 0.75rem; /* Rounded corners for video */
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .video-modal-content {
+                max-width: 95vw; /* Wider on small screens */
+                padding: 1rem;
+            }
+        }
+
+        .video-modal-close-button {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            color: #ff7f50; /* Accent orange for close button */
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .video-modal-close-button:hover {
+            color: #ff4500; /* Darker orange on hover */
+            transform: scale(1.1);
+        }
+
+        /* Sidebar styles */
+        #sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100; /* Below splash, above main content */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px; /* Hidden off-screen by default */
+            width: 250px;
+            height: 100%;
+            background-color: #1a1a2e; /* Darker background for sidebar */
+            padding: 3rem 1rem 2rem; /* Adjusted padding-top to shift content down */
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+            z-index: 101; /* Above overlay */
+            transition: left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0; /* Removed gap between elements for tighter spacing */
+        }
+
+        #sidebar.active {
+            left: 0; /* Slide into view */
+        }
+
+        #sidebar a {
+            color: #e0e0e0;
+            font-size: 1.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        #sidebar a:hover {
+            background-color: #2f2f4a;
+            color: #ffb703;
+        }
+
+        #hamburger-icon {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 102; /* Above sidebar */
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        #hamburger-icon:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #hamburger-icon svg {
+            color: #e0e0e0;
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Light mode adjustments for sidebar */
+        .light #sidebar {
+            background-color: #f0e68c; /* Lighter background */
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .light #sidebar a {
+            color: #333333;
+        }
+
+        .light #sidebar a:hover {
+            background-color: #e0d07c;
+            color: #8B4513; /* SaddleBrown for a rich brown color */
+        }
+
+        .light #hamburger-icon {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .light #hamburger-icon:hover {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .light #hamburger-icon svg {
+            color: #333333;
+        }
+
+    </style>
+</head>
+<body class="bg-dark-bg text-gray-100 min-h-screen flex flex-col items-center p-4">
+
+    <div id="splash-screen">
+        <img id="guru-image" src="static/img.png" alt="Guru Image">
+    </div>
+
+    <!-- Hamburger Icon -->
+    <div id="hamburger-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay"></div>
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <a href="/shop">Go to shop</a>
+        <a href="/admin">Admin's page</a>
+        <a href="/timetable">View Utsav Timetable</a>
+    </nav>
+
+    <button id="theme-toggle" class="toggle-button absolute top-4 right-4 py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-accent-orange focus:ring-opacity-75">
+        Toggle Theme
+    </button>
+
+    <div class="w-full max-w-4xl text-center hidden flex-grow" id="main-content">
+        <header class="mb-12">
+            <h1 id="main-title-container" class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold mb-4 text-gray-50">
+                <span id="typewriter-main-title"></span>
+            </h1>
+            <p id="shri-gurudeva-datta" class="opacity-0"></p>
+            <p id="saharsha-swaagat" class="opacity-0"></p>
+        </header>
+
+        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 w-full">
+            <a href="/chat" class="card block p-8 rounded-2xl border-accent-orange shadow-2xl group">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <svg class="w-20 h-20 mb-4 text-accent-orange transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <h2 class="text-3xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
+                        Proceed to Registrations
+                    </h2>
+                    <p class="text-lg text-gray-300 group-hover:text-gray-200 transition-colors duration-300">
+                        तुमची उपस्थिती कळवणे व इतर माहिती
+                    </p>
+                </div>
+            </a>
+
+            <a href="/location" class="card block p-8 rounded-2xl border-accent-green shadow-2xl group">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <svg class="w-20 h-20 mb-4 text-accent-green transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <h2 class="text-3xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
+                        Utsav Location
+                    </h2>
+                    <p class="text-lg text-gray-300 group-hover:text-gray-200 transition-colors duration-300">
+                        Click here to see where and how the event unfolds
+                    </p>
+                </div>
+            </a>
+
+            <!-- New 4th Card for Invitation Video -->
+            <a href="#" id="open-video-modal-card" class="card block p-8 rounded-2xl border-spiritual-gold shadow-2xl group">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <svg class="w-20 h-20 mb-4 text-spiritual-gold transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.847V10.153a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.664z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <h2 class="text-3xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
+                        Invitation For July 2025 Utsav Pune
+                    </h2>
+                    <p class="text-lg text-gray-300 group-hover:text-gray-200 transition-colors duration-300">
+                        Watch the special invitation video!
+                    </p>
+                </div>
+            </a>
+
+            <!-- Option 3: Contact Us / Suggestions (Moved to accommodate new card, now 3rd in row, still 4th logically) -->
+            <a href="/contact-us" class="card block p-8 rounded-2xl border-accent-blue shadow-2xl group">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <svg class="w-20 h-20 mb-4 text-accent-blue transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2l-4 4v-4H7m6-4v2m-6-2v2"></path>
+                    </svg>
+                    <h2 class="text-3xl font-bold mb-3 group-hover:text-white transition-colors duration-300">
+                        Contact Us
+                    </h2>
+                    <p class="text-lg text-gray-300 group-hover:text-gray-200 transition-colors duration-300">
+                        For any queries, contact us
+                    </p>
+                </div>
+            </a>
+        </main>
+    </div>
+
+    <footer class="mt-auto">
+        <p>Developed with love ❤️</p>
+        <div class="paduka-images-container">
+            <img src="static/logo.png" alt="Paduka Left" class="paduka-image">
+            <p class="footer-shlok">
+                गुरुर्ब्रह्मा गुरुर्विष्णुः गुरुर्देवो महेश्वरः ।<br>
+                गुरुः साक्षात् परब्रह्म तस्मै श्री गुरवे नमः ॥
+            </p>
+            <img src="static/logo.png" alt="Paduka Right" class="paduka-image">
+        </div>
+    </footer>
+
+    <!-- Sparkle Overlay -->
+    <div id="sparkle-overlay"></div>
+
+    <!-- Video Modal -->
+    <div id="video-modal-overlay">
+        <div class="video-modal-content">
+            <button class="video-modal-close-button" onclick="closeVideoModal()">&times;</button>
+            <video id="invitation-video" controls>
+                <source src="static/invitation-video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            </div>
+    </div>
+
+    <script>
+        // JavaScript for theme toggling
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            const htmlElement = document.documentElement;
+            const toggleButton = document.getElementById('theme-toggle');
+
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                htmlElement.classList.add('light');
+                toggleButton.textContent = 'Dark Theme';
+                stopSparkles(); // Stop sparkles in light mode
+            } else {
+                htmlElement.classList.remove('light');
+                htmlElement.classList.add('dark');
+                toggleButton.textContent = 'Light Theme';
+                startSparkles(); // Start sparkles in dark mode
+            }
+        });
+
+        const textsToType = [
+            { elementId: 'typewriter-main-title', text: 'July 2025 Utsav, Pune', isMainHeader: true },
+            { elementId: 'shri-gurudeva-datta', text: '🌷 Shri Rajaram Prasanna 🌷' },
+            { elementId: 'saharsha-swaagat', text: 'Aaple Saharsha Swaagat karat ahot' }
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        const typingSpeed = 70; // milliseconds per character
+        const lineDelay = 1000; // milliseconds delay between lines
+
+        function typeWriter() {
+            if (textIndex < textsToType.length) {
+                const current = textsToType[textIndex];
+                const targetElement = document.getElementById(current.elementId);
+
+                // Add typewriter cursor class only for the current typing element
+                const allTypewriterElements = document.querySelectorAll('#main-title-container span, #shri-gurudeva-datta, #saharsha-swaagat');
+                allTypewriterElements.forEach(el => {
+                    if (el.id === current.elementId) {
+                        el.classList.remove('typewriter-complete');
+                        el.classList.add('typewriter-text');
+                    } else {
+                        el.classList.remove('typewriter-text');
+                    }
+                });
+
+                if (charIndex < current.text.length) {
+                    targetElement.textContent += current.text.charAt(charIndex);
+                    // Make sure the element is visible
+                    targetElement.classList.remove('opacity-0');
+                    targetElement.classList.add('opacity-100');
+                    charIndex++;
+                    setTimeout(typeWriter, typingSpeed);
+                } else {
+                    // After typing a line, remove cursor and add gradient if it's the main header
+                    targetElement.classList.add('typewriter-complete'); // Remove cursor
+                    if (current.isMainHeader) {
+                        const mainTitleContainer = document.getElementById('main-title-container');
+                        // Apply the gradient after typing is complete
+                        mainTitleContainer.classList.add('header-gradient');
+                        mainTitleContainer.classList.remove('text-gray-50'); // Remove solid color
+                    }
+                    charIndex = 0;
+                    textIndex++;
+                    if (textIndex < textsToType.length) {
+                        // Add a small delay before typing the next line
+                        setTimeout(typeWriter, lineDelay);
+                    }
+                }
+            }
+        }
+
+        function startTypewriter() {
+            typeWriter();
+        }
+
+        // --- Sparkle Generation Logic ---
+        const createSparkle = () => {
+            const sparkleOverlay = document.getElementById('sparkle-overlay');
+            // Only create sparkles if the overlay is visible (i.e., in dark mode)
+            if (!sparkleOverlay || sparkleOverlay.style.visibility === 'hidden') {
+                return;
+            }
+
+            const sparkle = document.createElement('span');
+            sparkle.classList.add('sparkle');
+
+            const size = Math.random() * 8 + 3; // Size between 3px and 11px
+            sparkle.style.width = `${size}px`;
+            sparkle.style.height = `${size}px`;
+
+            const x = Math.random() * sparkleOverlay.offsetWidth;
+            const y = Math.random() * sparkleOverlay.offsetHeight;
+            sparkle.style.left = `${x}px`;
+            sparkle.style.top = `${y}px`;
+
+            // Randomize animation duration slightly
+            sparkle.style.setProperty('--sparkle-duration', `${Math.random() * 2 + 2}s`); // 2 to 4 seconds
+            sparkle.style.animationDelay = `${Math.random() * 0.5}s`; // Small random delay for staggered effect
+
+            sparkleOverlay.appendChild(sparkle);
+
+            // Remove sparkle after its animation ends to prevent DOM bloat
+            sparkle.addEventListener('animationend', () => {
+                sparkle.remove();
+            });
+        };
+
+        let sparkleInterval;
+
+        const startSparkles = () => {
+            if (sparkleInterval) clearInterval(sparkleInterval); // Clear existing interval if any
+            // Ensure sparkle overlay is visible before starting interval
+            const sparkleOverlay = document.getElementById('sparkle-overlay');
+            if (sparkleOverlay) sparkleOverlay.style.visibility = 'visible';
+
+            sparkleInterval = setInterval(createSparkle, 100); // Create a sparkle every 100ms for a denser effect
+        };
+
+        const stopSparkles = () => {
+            if (sparkleInterval) {
+                clearInterval(sparkleInterval);
+                sparkleInterval = null;
+            }
+            // Hide sparkle overlay
+            const sparkleOverlay = document.getElementById('sparkle-overlay');
+            if (sparkleOverlay) sparkleOverlay.style.visibility = 'hidden';
+
+            // Immediately remove existing sparkles
+            const existingSparkles = document.querySelectorAll('.sparkle');
+            existingSparkles.forEach(s => s.remove());
+        };
+
+        // --- Video Modal Functions ---
+        function showVideoModal() {
+            const modalOverlay = document.getElementById('video-modal-overlay');
+            const videoPlayer = document.getElementById('invitation-video');
+            if (modalOverlay && videoPlayer) {
+                modalOverlay.classList.add('active');
+                // Ensure video is loaded and ready before playing
+                videoPlayer.load(); // Load the video
+                videoPlayer.oncanplaythrough = () => {
+                    videoPlayer.play().then(() => {
+                        console.log("Video playback started successfully.");
+                    }).catch(error => {
+                        // This handles Promise rejections from video.play() (e.g., autoplay blocked)
+                        console.error("Autoplay failed or video playback error:", error || "Unknown error occurred during video playback.");
+                        console.warn("Browsers often block autoplay without user interaction. Please try clicking the video to play.");
+                    });
+                    // Ensure the oncanplaythrough listener is removed after it's used
+                    videoPlayer.oncanplaythrough = null;
+                };
+            }
+        }
+
+        function closeVideoModal() {
+            const modalOverlay = document.getElementById('video-modal-overlay');
+            const videoPlayer = document.getElementById('invitation-video');
+            if (modalOverlay && videoPlayer) {
+                videoPlayer.pause(); // Pause the video when modal closes
+                videoPlayer.currentTime = 0; // Rewind video to start
+                modalOverlay.classList.remove('active');
+            }
+        }
+
+        // Attach event listener to the new card
+        document.addEventListener('DOMContentLoaded', () => {
+            const openVideoCard = document.getElementById('open-video-modal-card');
+            if (openVideoCard) {
+                openVideoCard.addEventListener('click', (event) => {
+                    event.preventDefault(); // Prevent default link behavior
+                    showVideoModal();
+                });
+            }
+
+            // Sidebar toggle logic
+            const hamburgerIcon = document.getElementById('hamburger-icon');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            hamburgerIcon.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+            });
+
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+        });
+
+
+        // Logic for splash screen and main content loading
+        window.onload = function() {
+            const htmlElement = document.documentElement;
+            const toggleButton = document.getElementById('theme-toggle');
+            const splashScreen = document.getElementById('splash-screen');
+            const mainContent = document.getElementById('main-content');
+
+            // Set #main-content to relative for sparkle positioning
+            mainContent.style.position = 'relative';
+
+            // Initialize button text based on current theme
+            if (htmlElement.classList.contains('dark')) {
+                toggleButton.textContent = 'Light Theme';
+                startSparkles(); // Start sparkles if initially in dark mode
+            } else {
+                toggleButton.textContent = 'Dark Theme';
+                stopSparkles(); // Stop sparkles if initially in light mode
+            }
+
+            // After 3 seconds, fade out splash screen and reveal main content
+            setTimeout(() => {
+                splashScreen.classList.add('fade-out');
+                // After splash screen fades out, display main content and start typewriter
+                splashScreen.addEventListener('transitionend', () => {
+                    splashScreen.remove(); // Remove splash screen from DOM
+                    mainContent.classList.remove('hidden'); // Show main content
+                    // Explicitly enable vertical scrolling when content might overflow on the body itself
+                    document.body.style.overflowY = 'auto';
+                    startTypewriter(); // Start the typewriter animation
+                    // Sparkles are already handled by initial theme check or toggle function
+                }, { once: true }); // Ensure event listener runs only once
+            }, 3000); // Increased to 3000 milliseconds = 3 seconds
+        };
+    </script>
+</body>
+</html>

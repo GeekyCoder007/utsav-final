@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View/Edit Gurukul Utsav Registrations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Ensure Tailwind is loaded before configuration
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            inter: ['Inter', 'sans-serif'],
+                        },
+                        colors: {
+                            'dark-bg': '#03040A',
+                            'text-color-primary': '#e5e7eb',
+                            'text-color-secondary': '#9ca3af',
+                            'glass-bg': 'rgba(15, 12, 29, 0.4)',
+                            'glass-border': 'rgba(255, 255, 255, 0.1)',
+                            'input-bar-bg': 'rgba(10, 8, 20, 0.7)',
+                            'bot-message-bg': 'rgba(43, 46, 62, 0.7)',
+                            'user-input-bg': 'linear-gradient(135deg, #007BFF, #0056b3)',
+                            'form-button-bg': '#007BFF',
+                            'form-button-hover': '#0056b3',
+                            'error-red': '#ef4444',
+                            'success-green': '#22c55e',
+                            'scroll-thumb-bg': 'rgba(148, 163, 184, 0.3)',
+                            'splash-bg': 'rgba(0, 0, 0, 0.6)',
+                            'settings-highlight-bg': 'rgba(255, 255, 255, 0.05)',
+                            'form-field-bg-dark': 'rgba(0, 0, 0, 0.3)',
+                            'calendar-day-bg': 'rgba(255, 255, 255, 0.1)',
+                            'calendar-day-hover': 'rgba(255, 255, 255, 0.2)',
+                            'calendar-day-selected': '#007BFF',
+                        }
+                    },
+                }
+            };
+        } else {
+            console.error("Tailwind CSS not loaded. Cannot apply custom configuration.");
+        }
+    });
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    /* ------------------------------ */
+    /* CSS Variables for Theming      */
+    /* ------------------------------ */
+    :root {
+      --bg-color: #03040A;
+      --text-color-primary: #e5e7eb;
+      --text-color-secondary: #9ca3af;
+      --glass-bg: rgba(15, 12, 29, 0.4);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --input-bar-bg: rgba(10, 8, 20, 0.7);
+      --bot-message-bg: rgba(43, 46, 62, 0.7);
+      --user-input-bg: linear-gradient(135deg, #007BFF, #0056b3);
+      --form-button-bg: #007BFF;
+      --form-button-hover: #0056b3;
+      --scroll-thumb-bg: rgba(148, 163, 184, 0.3);
+      --splash-bg: rgba(0, 0, 0, 0.6);
+      --settings-highlight-bg: rgba(255, 255, 255, 0.05);
+      --error-color: #ef4444;
+      --success-color: #22c55e;
+      --form-field-bg: rgba(0, 0, 0, 0.3); /* For inputs */
+      --calendar-day-bg: rgba(255, 255, 255, 0.1);
+      --calendar-day-hover: rgba(255, 255, 255, 0.2);
+      --calendar-day-selected: #007BFF;
+
+      /* Zoom variables */
+      --global-font-size: 16px; /* Base font size for 'rem' calculation */
+      --chat-max-width: 640px; /* Base max-width for chat container */
+    }
+
+    .light-theme {
+      --bg-color: #F0F2F5;
+      --text-color-primary: #1f2937;
+      --text-color-secondary: #4b5563;
+      --glass-bg: rgba(255, 255, 255, 0.5);
+      --glass-border: rgba(0, 0, 0, 0.1);
+      --input-bar-bg: rgba(229, 231, 235, 0.8);
+      --bot-message-bg: rgba(229, 231, 235, 1);
+      --user-input-bg: linear-gradient(135deg, #007BFF, #0069d9);
+      --form-button-bg: #007BFF;
+      --form-button-hover: #0069d9;
+      --scroll-thumb-bg: rgba(107, 114, 128, 0.4);
+      --splash-bg: rgba(255, 255, 255, 0.5);
+      --settings-highlight-bg: rgba(0, 0, 0, 0.05);
+      --error-color: #dc2626;
+      --success-color: #16a34a;
+      --form-field-bg: rgba(255, 255, 255, 0.7); /* For inputs */
+      --calendar-day-bg: rgba(0, 0, 0, 0.05);
+      --calendar-day-hover: rgba(0, 0, 0, 0.1);
+      --calendar-day-selected: #007BFF;
+    }
+
+    /* ------------------------------ */
+    /* Base Styling                   */
+    /* ------------------------------ */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color-primary);
+      transition: background-color 0.5s ease, color 0.5s ease;
+      font-size: var(--global-font-size); /* Apply global font size */
+    }
+
+    /* ------------------------------ */
+    /* Dynamic Evolving Waves         */
+    /* ------------------------------ */
+    #dynamic-background {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+      background-color: var(--bg-color);
+      transition: background-color 0.5s ease;
+    }
+    #dynamic-background .wave {
+      position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.5;
+    }
+
+    @keyframes wave-move-1 { 0% { transform: translate(0, 0) rotate(0deg) scale(1.2); } 50% { transform: translate(150px, 100px) rotate(180deg) scale(1.4); } 100% { transform: translate(0, 0) rotate(360deg) scale(1.2); } }
+    @keyframes wave-move-2 { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 50% { transform: translate(-200px, -150px) rotate(180deg) scale(1.2); } 100% { transform: translate(0, 0) rotate(360deg) scale(1); } }
+    @keyframes wave-move-3 { 0% { transform: translate(0, 0) rotate(0deg) scale(1.1); } 50% { transform: translate(100px, -150px) rotate(-180deg) scale(1.3); } 100% { transform: translate(0, 0) rotate(-360deg) scale(1.1); } }
+    @keyframes change-color-1 { 0%, 100% { background-color: #1a0033; } 33% { background-color: #001f2e; } 66% { background-color: #0d1127; } }
+    @keyframes change-color-2 { 0%, 100% { background-color: #001f2e; } 33% { background-color: #0d1127; } 66% { background-color: #2a004d; } }
+    @keyframes change-color-3 { 0%, 100% { background-color: #0d1127; } 33% { background-color: #1a0033; } 66% { background-color: #00334d; } }
+
+    .wave-1 { width: 800px; height: 800px; top: -25%; left: -15%; animation: wave-move-1 30s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite, change-color-1 20s ease-in-out infinite; }
+    .wave-2 { width: 900px; height: 900px; bottom: -30%; right: -20%; animation: wave-move-2 25s cubic-bezier(0.36, 0.45, 0.63, 0.53) -10s infinite, change-color-2 20s ease-in-out -5s infinite; }
+    .wave-3 { width: 700px; height: 700px; bottom: 5%; left: -10%; animation: wave-move-3 20s cubic-bezier(0.36, 0.45, 0.63, 0.53) -5s infinite, change-color-3 20s ease-in-out -15s infinite; }
+
+    .light-theme #dynamic-background { opacity: 0; }
+
+    /* ------------------------------ */
+    /* Splash Screen & Animations     */
+    /* ------------------------------ */
+    #splash { background-color: var(--splash-bg); transition: background-color 0.5s ease; }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+    .animate-fade-out { animation: fadeOut 1.5s ease-in-out forwards; }
+
+    @keyframes splash-image-appear {
+        0% {
+            opacity: 0;
+            transform: scale(0.5);
+            box-shadow: 0 0 5px 2px rgba(255, 193, 7, 0.2), 0 0 10px 4px rgba(255, 193, 7, 0.1);
+        }
+        50% {
+            opacity: 0.7;
+            transform: scale(0.85);
+            box-shadow: 0 0 30px 10px rgba(255, 193, 7, 0.6), 0 0 60px 20px rgba(255, 193, 7, 0.3);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+            box-shadow: 0 0 60px 25px rgba(255, 193, 7, 0.9), 0 0 120px 50px rgba(255, 193, 7, 0.5);
+        }
+    }
+    .splash-image-style {
+        border-radius: 50%;
+        object-fit: cover;
+        border: 8px solid #FFC107;
+        animation: splash-image-appear 1.5s forwards ease-out;
+        animation-delay: 0.2s;
+        width: 250px;
+        height: 250px;
+        max-width: 80vw;
+        max-height: 80vw;
+    }
+
+    @keyframes splash-text { 0% { opacity: 0; transform: translateY(20px); } 30%, 70% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
+    .animate-splash-text { animation: splash-text 1.5s ease-in-out forwards; }
+
+    /* ------------------------------ */
+    /* Polished Glass Container       */
+    /* ------------------------------ */
+    .glass-container {
+      background: var(--glass-bg);
+      backdrop-filter: blur(50px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 0 0 1.5px rgba(255, 255, 255, 0.05);
+      transition: background-color 0.5s ease, border 0.5s ease, max-width 0.3s ease;
+      max-width: var(--chat-max-width);
+      max-height: 95vh;
+      overflow-y: auto;
+    }
+
+    /* Scrollbar styles for the main chat window */
+    .glass-container::-webkit-scrollbar { width: 6px; }
+    .glass-container::-webkit-scrollbar-track { background: transparent; }
+    .glass-container::-webkit-scrollbar-thumb { background-color: var(--scroll-thumb-bg); border-radius: 3px; }
+    .glass-container::-webkit-scrollbar-thumb:hover { background-color: rgba(148, 163, 184, 0.5); }
+
+
+    /* ------------------------------ */
+    /* Chat/Form Interaction Styles   */
+    /* ------------------------------ */
+    .interaction-bubble {
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease-in-out;
+        max-width: 100%;
+    }
+
+    .interaction-bubble.active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .bot-message {
+        background: var(--bot-message-bg);
+        color: var(--text-color-primary);
+        align-self: flex-start;
+        border-bottom-left-radius: 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        padding: 1rem 1.5rem;
+    }
+    .bot-message .bot-avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+        border: 2px solid var(--form-button-bg);
+    }
+    .bot-message .bot-text-content {
+        flex-grow: 1;
+    }
+
+    .user-input-form {
+        background: var(--user-input-bg);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 0.5rem;
+        pointer-events: auto; /* Always active for search form */
+    }
+
+    .user-input-form h2 {
+        font-size: 1.5em;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: white;
+    }
+    .user-input-form p {
+        font-size: 1em;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 1.5rem;
+    }
+    .user-input-form label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: white;
+    }
+    .user-input-form input[type="text"],
+    .user-input-form input[type="tel"],
+    .user-input-form input[type="number"],
+    .user-input-form select,
+    .user-input-form textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        background-color: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: white;
+        font-size: 1em;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .user-input-form input:focus,
+    .user-input-form select:focus,
+    .user-input-form textarea:focus {
+        outline: none;
+        border-color: white;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+    .user-input-form input::placeholder,
+    .user-input-form textarea::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    .user-input-form select option {
+        background-color: var(--form-button-bg);
+        color: white;
+    }
+
+    .form-field-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-field-group .error-message {
+        color: var(--error-color);
+        font-size: 0.875em;
+        margin-top: 0.5rem;
+        height: 1.25rem;
+    }
+
+    .form-button {
+        background-color: white;
+        color: var(--form-button-bg);
+        padding: 0.75rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .form-button:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    .form-button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Theme and Zoom buttons */
+    .theme-button {
+      background-color: var(--settings-highlight-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-color-primary);
+      padding: 0.5rem 0.75rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+    .theme-button:hover {
+        background-color: var(--glass-border);
+    }
+
+
+    /* Summary Specific Styling */
+    .summary-section {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .summary-section h3 {
+        font-size: 1.25em;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-color-primary);
+    }
+
+    .summary-section p, .summary-section ul li {
+        font-size: 0.95em;
+        line-height: 1.5;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .summary-section p strong, .summary-section ul li strong {
+        color: var(--text-color-secondary);
+        min-width: 100px;
+    }
+    .summary-section p span, .summary-section ul li span {
+        color: var(--text-color-primary);
+    }
+
+    .summary-attendee-card {
+        background-color: rgba(255, 255, 255, 0.07);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .summary-attendee-card h4 {
+        font-size: 1.15em;
+        font-weight: 700;
+        margin-bottom: 1.25rem;
+        color: var(--form-button-bg);
+        display: flex;
+        align-items: center;
+    }
+    .summary-attendee-card h5 {
+        font-size: 1em;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-color-primary);
+        display: flex;
+        align-items: center;
+    }
+    .summary-attendee-card .grid div {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .summary-attendee-card .grid div strong {
+        min-width: 80px;
+        color: var(--text-color-secondary);
+    }
+
+    .summary-attendee-card ul.list-none {
+        padding-left: 0;
+    }
+    .summary-attendee-card ul.list-none li {
+        margin-left: 0;
+        padding-left: 1rem;
+        border-left: 2px solid rgba(255,255,255,0.1);
+    }
+
+    /* Registration Details Display (Like a ticket/summary card) */
+    .registration-details-display {
+        position: relative;
+        background: linear-gradient(135deg, #1A202C, #2D3748);
+        color: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+        margin-top: 2rem;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+        animation: ticket-appear 0.8s ease-out forwards;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        width: 100%;
+        max-width: 700px; /* Wider for details */
+        align-self: center;
+        font-size: 0.9em;
+    }
+
+    @keyframes ticket-appear {
+        0% { opacity: 0; transform: translateY(50px) scale(0.9); }
+        80% { opacity: 1; transform: translateY(-5px) scale(1.02); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .registration-details-display .header h2 {
+        font-size: 2em;
+        font-weight: 800;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        color: #FFD700;
+        margin-bottom: 0.5rem;
+    }
+
+    .registration-details-display .header p {
+        font-size: 1.1em;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 1rem;
+    }
+
+    .registration-details-display .id-display {
+        font-family: 'monospace', sans-serif;
+        font-size: 2.2em;
+        font-weight: 700;
+        letter-spacing: 2px;
+        background: linear-gradient(45deg, #00C6FF, #0072FF);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-top: 1.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 0.5rem;
+        display: inline-block;
+        box-shadow: 0 0 15px rgba(0, 114, 255, 0.6);
+        transition: all 0.3s ease-in-out;
+    }
+    .registration-details-display .id-display:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(0, 114, 255, 0.8);
+    }
+
+    .registration-details-display .details-section {
+        text-align: left;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 2;
+    }
+
+    .registration-details-display .details-section h4 {
+        font-size: 1.2em;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #FFD700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .registration-details-display .details-section p, .registration-details-display .details-section li {
+        font-size: 0.9em;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .registration-details-display .details-section p strong, .registration-details-display .details-section li strong {
+        color: rgba(255, 255, 255, 0.7);
+        flex-shrink: 0;
+    }
+    .registration-details-display .details-section ul {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .registration-details-display .details-section ul li {
+        margin-bottom: 0.5rem;
+        padding-left: 1rem;
+        position: relative;
+    }
+    .registration-details-display .details-section ul li::before {
+        content: '\2022';
+        color: #FFD700;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    .registration-details-display .footer {
+        margin-top: 2rem;
+        font-size: 0.85em;
+        color: rgba(255, 255, 255, 0.7);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 1rem;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .registration-details-display .footer .form-button {
+        background-color: #4CAF50;
+        color: white;
+        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+        margin-top: 1.5rem;
+    }
+    .registration-details-display .footer .form-button:hover {
+        background-color: #45a049;
+    }
+    .registration-details-display .footer .form-button.delete-button {
+        background-color: #ef4444; /* Tailwind red-500 */
+    }
+    .registration-details-display .footer .form-button.delete-button:hover {
+        background-color: #dc2626; /* Tailwind red-600 */
+    }
+
+
+    /* Modal for confirmation (reused from index.html) */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active {
+        opacity: 1;
+    }
+    .modal-content {
+        background: linear-gradient(135deg, #1A202C, #2D3748);
+        border-radius: 1rem;
+        padding: 2rem;
+        color: white;
+        text-align: center;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+    .modal-overlay.active .modal-content {
+        transform: scale(1);
+    }
+    .modal-content h3 {
+        font-size: 1.5em;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .modal-content p {
+        margin-bottom: 1.5rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    .modal-actions .form-button {
+        margin-top: 0;
+        padding: 0.6rem 1.5rem;
+    }
+
+    /* Styles for fixed bottom buttons (reused from index.html) */
+    #global-actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        z-index: 20;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(5px);
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    #global-actions .action-button {
+        background-color: var(--form-button-bg);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    #global-actions .action-button:hover {
+        background-color: var(--form-button-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    #global-actions .action-button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+
+<body class="text-slate-200">
+
+  <div id="dynamic-background">
+    <div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+  </div>
+
+  <!-- Splash Screen -->
+  <div id="splash" class="fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm">
+    <img id="splash-image" src="https://placehold.co/250x250/FFC107/000000?text=Guru+Logo" alt="Gurukul Utsav Logo" class="hidden w-40 h-40 md:w-56 md:h-56 object-contain mb-8 shadow-2xl splash-image-style">
+    <h1 id="splash-text" class="hidden text-white text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide text-center px-4">
+      Gurukul Utsav Registrations
+    </h1>
+  </div>
+
+  <!-- Custom Confirmation Modal (Shared styling) -->
+  <div id="confirmation-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+          <h3 id="modal-title"></h3>
+          <p id="modal-message"></p>
+          <div class="modal-actions">
+              <button id="modal-confirm-btn" class="form-button"></button>
+              <button id="modal-cancel-btn" class="form-button bg-gray-500 hover:bg-gray-600">Cancel</button>
+          </div>
+      </div>
+  </div>
+
+  <div id="main-content" class="hidden relative z-10 flex items-center justify-center min-h-screen p-2 md:p-4 overflow-hidden">
+    <div class="glass-container flex flex-col w-full rounded-3xl p-6 sm:p-8 pb-20">
+
+      <div class="flex items-center justify-between p-4 border-b border-white/10 flex-wrap gap-2 mb-4">
+        <h1 class="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 tracking-wide">
+          View/Edit Registration
+        </h1>
+        <div class="flex gap-2">
+            <button id="zoom-out-btn" class="theme-button" aria-label="Zoom Out">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button id="zoom-in-btn" class="theme-button" aria-label="Zoom In">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button id="theme-toggle" class="theme-button" aria-label="Toggle theme">
+                <i class="fas fa-sun text-yellow-300" id="sun-icon"></i>
+                <i class="fas fa-moon text-blue-300 hidden" id="moon-icon"></i>
+                <span id="theme-text" class="hidden sm:inline">Dark Mode</span>
+            </button>
+        </div>
+      </div>
+
+      <!-- Input for Registration ID -->
+      <div id="search-input-section" class="interaction-bubble user-input-form active">
+            <h2>Enter Registration ID</h2>
+            <div class="form-field-group">
+                <label for="registration-id-input">Registration ID:</label>
+                <input type="text" id="registration-id-input" class="w-full p-3 rounded-xl bg-[var(--form-field-bg)] border border-[var(--glass-border)] text-[var(--text-color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--form-button-bg)]" placeholder="e.g., REG-2025-ABCDEF12">
+                <div id="registration-id-error" class="error-message"></div>
+            </div>
+            <button class="form-button w-full" onclick="searchRegistration()">
+                <i class="fas fa-search pr-2"></i> Search Registration
+            </button>
+      </div>
+
+      <!-- Display Area for Registration Details -->
+      <div id="registration-details-area" class="mt-4 flex-grow flex flex-col items-center">
+        <!-- Details will be loaded here -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Global Action Buttons (Fixed Footer) -->
+  <div id="global-actions">
+      <button class="action-button" onclick="window.location.href='/chat'">
+          <i class="fas fa-home"></i> New Registration
+      </button>
+      <button class="action-button" onclick="resetSearch()">
+          <i class="fas fa-redo"></i> New Search
+      </button>
+      <button class="action-button" onclick="window.location.href='/'">
+          <i class="fas fa-home"></i> Home
+      </button>
+  </div>
+
+
+  <script>
+    // --- DOM Elements ---
+    const splashScreen = document.getElementById('splash');
+    const splashImage = document.getElementById('splash-image');
+    const splashText = document.getElementById('splash-text');
+    const mainContent = document.getElementById('main-content');
+    const registrationIdInput = document.getElementById('registration-id-input');
+    const registrationIdError = document.getElementById('registration-id-error');
+    const registrationDetailsArea = document.getElementById('registration-details-area');
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
+    const themeText = document.getElementById('theme-text');
+    const zoomInBtn = document.getElementById('zoom-in-btn');
+    const zoomOutBtn = document.getElementById('zoom-out-btn');
+
+    // Modal elements
+    const confirmationModal = document.getElementById('confirmation-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+
+    // Bot Avatar Image (Placeholder - User will replace this)
+    const botAvatarSrc = "static/self-me.png"; // AD for Aditya Paranjape
+
+    // --- Dummy Databases / Data Simulation ---
+    // In a real application, this would be on your server.
+    // This object mimics your DynamoDB 'users' table where registrationId is the PK.
+    // This is used for local testing and demonstration of the UI if the backend
+    // is not running or accessible. The fetch calls to the backend will take precedence.
+    let simulatedDynamoDB = {
+        'REG-2025-44895150': {
+            registrationId: 'REG-2025-44895150',
+            mainRegistrant: { mobile: '+919876543210', firstName: 'Krishna', lastName: 'Das', ref1: '+91 7000000001', ref2: '+91 7000000002' },
+            travelDetails: {
+                members: [
+                    {
+                        firstName: 'Krishna', lastName: 'Das', mobile: '+919876543210', age: 40, gender: 'M',
+                        modeOfTransport: 'Train', cityOfOrigin: 'Mumbai',
+                        arrivalDate: '08|07|2025', arrivalTime: '08:00',
+                        departureDate: '10|07|2025', departureTime: '18:00',
+                        attendingDates: ['2025-07-08', '2025-07-09', '2025-07-10'], //YYYY-MM-DD format
+                        morningTeaCoffee: { preference: 'tea', sugar: 'sugar' }, // New field
+                        mealPreferences: {
+                            '2025-07-08': { breakfast: false, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'tea', teaCoffeeSugar: 'sugar', packedFood: false },
+                            '2025-07-09': { breakfast: true, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'coffee', teaCoffeeSugar: 'no-sugar', packedFood: false },
+                            '2025-07-10': { breakfast: true, lunch: false, highTea: false, dinner: false, teaCoffeePreference: 'none', teaCoffeeSugar: 'sugar', packedFood: true }
+                        },
+                        stayAtHall: true, cotRequired: true, difficultyClimbingStairs: false,
+                        localAssistance: 'Sankirtan Prabhu',
+                        recordingsNeeded: 'Morning Lecture',
+                        specialRequests: 'Needs hot milk for evening prasadam.'
+                    },
+                    {
+                        firstName: 'Radha', lastName: 'Devi', mobile: '+919876543211', age: 38, gender: 'F',
+                        modeOfTransport: 'Train', cityOfOrigin: 'Mumbai',
+                        arrivalDate: '08|07|2025', arrivalTime: '08:00',
+                        departureDate: '10|07|2025', departureTime: '18:00',
+                        attendingDates: ['2025-07-08', '2025-07-09', '2025-07-10'], //YYYY-MM-DD format
+                        morningTeaCoffee: { preference: 'both', sugar: 'sugar' },
+                        mealPreferences: {
+                            '2025-07-08': { breakfast: false, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'both', teaCoffeeSugar: 'sugar', packedFood: false },
+                            '2025-07-09': { breakfast: true, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'tea', teaCoffeeSugar: 'no-sugar', packedFood: false },
+                            '2025-07-10': { breakfast: true, lunch: false, highTea: false, dinner: false, teaCoffeePreference: 'none', teaCoffeeSugar: 'sugar', packedFood: true }
+                        },
+                        stayAtHall: true, cotRequired: false, difficultyClimbingStairs: true,
+                        localAssistance: '',
+                        recordingsNeeded: '',
+                        specialRequests: ''
+                    }
+                ]
+            }
+        },
+        'REG-2025-ABCD1234': {
+            registrationId: 'REG-2025-ABCD1234',
+            mainRegistrant: { mobile: '+919988776655', firstName: 'Radha', lastName: 'Priya', ref1: '+91 7000000003', ref2: '+91 7000000001' },
+            travelDetails: {
+                members: [
+                    {
+                        firstName: 'Radha', lastName: 'Priya', mobile: '+919988776655', age: 30, gender: 'F',
+                        modeOfTransport: 'Flight', cityOfOrigin: 'Delhi',
+                        arrivalDate: '09|07|2025', arrivalTime: '10:00',
+                        departureDate: '11|07|2025', departureTime: '14:00',
+                        attendingDates: ['2025-07-09', '2025-07-10', '2025-07-11'], //YYYY-MM-DD format
+                        morningTeaCoffee: { preference: 'coffee', sugar: 'no-sugar' },
+                        mealPreferences: {
+                            '2025-07-09': { breakfast: false, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'coffee', teaCoffeeSugar: 'no-sugar', packedFood: false },
+                            '2025-07-10': { breakfast: true, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'both', teaCoffeeSugar: 'no-sugar', packedFood: false },
+                            '2025-07-11': { breakfast: true, lunch: false, highTea: false, dinner: false, teaCoffeePreference: 'tea', teaCoffeeSugar: 'sugar', packedFood: true }
+                        },
+                        stayAtHall: false, cotRequired: false, difficultyClimbingStairs: false,
+                        localAssistance: 'Bhakti Devi Dasi',
+                        recordingsNeeded: 'Evening Kirtan, Youth Session',
+                        specialRequests: 'No spicy food for this attendee.'
+                    }
+                ]
+            }
+        },
+        'REG-2025-0FC3A348': { // Added this new entry for demonstration
+            registrationId: 'REG-2025-0FC3A348',
+            mainRegistrant: { mobile: '+919000000000', firstName: 'Gauranga', lastName: 'Das', ref1: '+91 7000000001', ref2: '+91 7000000003' },
+            travelDetails: {
+                members: [
+                    {
+                        firstName: 'Gauranga', lastName: 'Das', mobile: '+919000000000', age: 25, gender: 'M',
+                        modeOfTransport: 'Bus', cityOfOrigin: 'Pune',
+                        arrivalDate: '07|07|2025', arrivalTime: '12:00',
+                        departureDate: '09|07|2025', departureTime: '16:00',
+                        attendingDates: ['2025-07-07', '2025-07-08', '2025-07-09'],
+                        morningTeaCoffee: { preference: 'coffee', sugar: 'sugar' },
+                        mealPreferences: {
+                            '2025-07-07': { breakfast: false, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'coffee', teaCoffeeSugar: 'sugar', packedFood: false },
+                            '2025-07-08': { breakfast: true, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'coffee', teaCoffeeSugar: 'sugar', packedFood: false },
+                            '2025-07-09': { breakfast: true, lunch: false, highTea: false, dinner: false, teaCoffeePreference: 'none', teaCoffeeSugar: 'sugar', packedFood: true }
+                        },
+                        stayAtHall: true, cotRequired: false, difficultyClimbingStairs: false,
+                        localAssistance: 'N/A',
+                        recordingsNeeded: 'Keynote Lecture',
+                        specialRequests: 'Seperate vegan meal.'
+                    },
+                    {
+                        firstName: 'Vishnupriya', lastName: 'Devi', mobile: '+919000000001', age: 23, gender: 'F',
+                        modeOfTransport: 'Bus', cityOfOrigin: 'Pune',
+                        arrivalDate: '07|07|2025', arrivalTime: '12:00',
+                        departureDate: '09|07|2025', departureTime: '16:00',
+                        attendingDates: ['2025-07-07', '2025-07-08', '2025-07-09'],
+                        morningTeaCoffee: { preference: 'tea', sugar: 'no-sugar' },
+                        mealPreferences: {
+                            '2025-07-07': { breakfast: false, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'tea', teaCoffeeSugar: 'no-sugar', packedFood: false },
+                            '2025-07-08': { breakfast: true, lunch: true, highTea: true, dinner: true, teaCoffeePreference: 'tea', teaCoffeeSugar: 'no-sugar', packedFood: false },
+                            '2025-07-09': { breakfast: true, lunch: false, highTea: false, dinner: false, teaCoffeePreference: 'none', teaCoffeeSugar: 'no-sugar', packedFood: true }
+                        },
+                        stayAtHall: true, cotRequired: false, difficultyClimbingStairs: false,
+                        localAssistance: 'N/A',
+                        recordingsNeeded: '',
+                        specialRequests: ''
+                    }
+                ]
+            }
+        }
+    };
+
+
+    // --- Theme Logic ---
+    let isLightMode = false; // Default to dark mode
+
+    function toggleTheme() {
+        isLightMode = !isLightMode;
+        if (isLightMode) {
+            document.body.classList.add('light-theme');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+            themeText.textContent = 'Light Mode';
+        } else {
+            document.body.classList.remove('light-theme');
+            sunIcon.classList.remove('hidden');
+            moonIcon.classList.add('hidden');
+            themeText.textContent = 'Dark Mode';
+        }
+        localStorage.setItem('theme', isLightMode ? 'light' : 'dark'); // Save preference
+    }
+
+    // Apply saved theme on load
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        isLightMode = false; // Will be true after toggleTheme()
+        toggleTheme();
+    } else {
+        isLightMode = true; // Will be false after toggleTheme()
+        toggleTheme(); // Set to dark mode initially if no preference or 'dark'
+    }
+
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // --- Zoom Logic ---
+    let currentZoomLevel = 1.0; // Initial zoom level
+    const zoomFactor = 1.25; // 25% increase/decrease
+    const baseFontSize = 16; // px, corresponds to 1rem
+    const baseChatMaxWidth = 640; // px, corresponds to Tailwind's max-w-xl
+    const minZoom = 0.64; // Approx 16px * 0.64 = 10.24px. (1/1.25^2)
+    const maxZoom = 1.95; // Approx 16px * 1.95 = 31.2px. (1.25^2)
+
+    function updateZoom() {
+        // Set global font size for root rem calculation
+        document.documentElement.style.setProperty('--global-font-size', `${baseFontSize * currentZoomLevel}px`);
+        // Adjust the max-width of the glass container for chat size
+        document.documentElement.style.setProperty('--chat-max-width', `${baseChatMaxWidth * currentZoomLevel}px`);
+    }
+
+    zoomInBtn.addEventListener('click', () => {
+        currentZoomLevel = Math.min(maxZoom, currentZoomLevel * zoomFactor);
+        updateZoom();
+    });
+
+    zoomOutBtn.addEventListener('click', () => {
+        currentZoomLevel = Math.max(minZoom, currentZoomLevel / zoomFactor);
+        updateZoom();
+    });
+
+    // Initialize zoom level on load
+    updateZoom();
+
+    // --- Splash Screen & Initial Load Logic ---
+    window.onload = () => {
+      console.log('Window loaded. Starting splash screen sequence.');
+      splashImage.classList.add('splash-image-style');
+      splashImage.classList.remove('hidden');
+
+      setTimeout(() => {
+        console.log('Timeout 1: Hiding splash image, showing text.');
+        splashImage.style.display = 'none';
+        splashText.classList.remove('hidden');
+        splashText.classList.add('animate-splash-text');
+
+        setTimeout(() => {
+          console.log('Timeout 2: Starting splash screen fade-out.');
+          splashScreen.classList.add('animate-fade-out');
+          splashScreen.addEventListener('animationend', () => {
+            console.log('Splash screen animation ended. Showing main content.');
+            splashScreen.remove(); // Remove splash screen element from DOM
+            mainContent.classList.remove('hidden'); // Make main content visible
+            registrationIdInput.focus(); // Focus on input after load
+          }, { once: true });
+        }, 750); // Reduced from 1500ms for quicker transition
+    }, 1000); // Reduced from 2000ms for quicker transition
+    };
+
+    /**
+     * Shows a custom confirmation modal.
+     * @param {string} title - The title for the modal.
+     * @param {string} message - The message for the modal.
+     * @param {string} confirmText - Text for the confirm button.
+     * @returns {Promise<boolean>} Resolves to true if confirmed, false if cancelled.
+     */
+    function showConfirmationModal(title, message, confirmText) {
+        return new Promise((resolve) => {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalConfirmBtn.textContent = confirmText;
+
+            confirmationModal.classList.remove('hidden');
+            setTimeout(() => confirmationModal.classList.add('active'), 50); // Fade in
+
+            const handleConfirm = () => {
+                confirmationModal.classList.remove('active');
+                confirmationModal.addEventListener('transitionend', () => {
+                    confirmationModal.classList.add('hidden');
+                    resolve(true);
+                }, { once: true });
+            };
+
+            const handleCancel = () => {
+                modalConfirmBtn.removeEventListener('click', handleConfirm); // Clean up
+                modalCancelBtn.removeEventListener('click', handleCancel); // Clean up
+                confirmationModal.classList.remove('active');
+                confirmationModal.addEventListener('transitionend', () => {
+                    confirmationModal.classList.add('hidden');
+                    resolve(false);
+                }, { once: true });
+            };
+
+            modalConfirmBtn.addEventListener('click', handleConfirm);
+            modalCancelBtn.addEventListener('click', handleCancel);
+        });
+    }
+
+    /**
+     * Scrolls the main content glass container to the bottom.
+     */
+    function scrollToBottom() {
+        const glassContainer = document.querySelector('.glass-container');
+        if (glassContainer) {
+            glassContainer.scrollTop = glassContainer.scrollHeight;
+        }
+    }
+
+    /**
+     * Displays a temporary message below the search input.
+     * @param {string} message - The message to display.
+     * @param {string} type - 'success' or 'error'.
+     */
+    function displayMessage(message, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `p-3 rounded-lg mt-4 text-center text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} w-full`;
+        messageDiv.textContent = message;
+        // Clear previous messages/details and add this message
+        registrationDetailsArea.innerHTML = '';
+        registrationDetailsArea.appendChild(messageDiv);
+        scrollToBottom();
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 3000); // Remove message after 3 seconds
+    }
+
+    /**
+     * Searches for a registration ID using the backend API and displays details.
+     */
+    async function searchRegistration() {
+        const registrationId = registrationIdInput.value.trim().toUpperCase();
+        registrationIdError.textContent = ''; // Clear previous error
+        registrationDetailsArea.innerHTML = ''; // Clear previous display
+
+        if (!registrationId) {
+            registrationIdError.textContent = 'Please enter a Registration ID.';
+            return;
+        }
+
+        // Basic validation for REG-YYYY-XXXXXXXX format
+        const regex = /^REG-2025-[0-9A-F]{8}$/;
+        if (!regex.test(registrationId)) {
+            registrationIdError.textContent = 'Invalid Registration ID format. Expected: REG-2025-XXXXXXXX (X=alphanumeric).';
+            return;
+        }
+
+        let foundRegistration = null;
+
+        // --- Actual Backend API Call ---
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/get-registration/${registrationId}`);
+            if (response.ok) {
+                foundRegistration = await response.json();
+                console.log('Fetched registration data from backend:', foundRegistration); // Log fetched data
+                displayFoundRegistrationDetails(foundRegistration);
+                // Removed displayMessage('Registration found!', 'success'); as details display serves as success
+            } else if (response.status === 404) {
+                displayMessage('Registration ID not found.', 'error');
+            } else {
+                const errorText = await response.text(); // Get raw text for generic error
+                displayMessage(`Error searching: ${response.statusText} - ${errorText}`, 'error');
+                console.error('Backend search error:', response.status, errorText);
+            }
+        } catch (error) {
+            console.error("Network or backend connection error during search:", error);
+            // Fallback to simulated data if backend is not accessible
+            displayMessage('Could not connect to backend. Attempting local data lookup.', 'warning'); // Changed to warning
+            foundRegistration = simulatedDynamoDB[registrationId];
+            if (foundRegistration) {
+                console.log('Found registration in simulated data:', foundRegistration); // Log simulated data
+                displayFoundRegistrationDetails(foundRegistration);
+                // Removed displayMessage here too
+            } else {
+                displayMessage('Registration ID not found (even in simulated data).', 'error');
+            }
+        }
+        scrollToBottom();
+    }
+
+    /**
+     * Displays the found registration details in a formatted way.
+     * @param {Object} registrationData - The registration data object.
+     */
+    function displayFoundRegistrationDetails(registrationData) {
+        let attendeesSummaryHtml = '';
+        const mealMap = {
+            breakfast: 'Breakfast',
+            lunch: 'Lunch',
+            highTea: 'High Tea',
+            dinner: 'Dinner'
+        };
+
+        registrationData.travelDetails.members.forEach((member, index) => {
+            const mealsSummary = member.attendingDates.map(dateYYYYMMDD => {
+                const prefs = member.mealPreferences[dateYYYYMMDD];
+                const displayDate = new Date(dateYYYYMMDD + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+
+                const mealList = [];
+                for (const mealKey in mealMap) {
+                    if (prefs && prefs[mealKey]) {
+                        mealList.push(mealMap[mealKey]);
+                    }
+                }
+                const mealsStr = mealList.length > 0 ? mealList.join(', ') : 'None';
+
+                const teaCoffeeDisplay = (prefs && prefs.teaCoffeePreference === 'none') || !prefs ? 'None' : `${prefs.teaCoffeePreference.charAt(0).toUpperCase() + prefs.teaCoffeePreference.slice(1)} (Sugar: ${prefs.teaCoffeeSugar === 'sugar' ? 'Yes' : 'No'})`;
+
+                return `<li><strong>${displayDate}:</strong> ${mealsStr} (Beverage: ${teaCoffeeDisplay}) ${prefs && prefs.packedFood ? '(Packed Meal)' : ''}</li>`;
+            }).join('');
+
+            const morningTeaCoffeeDisplay = member.morningTeaCoffee.preference === 'none' ? 'None' : `${member.morningTeaCoffee.preference.charAt(0).toUpperCase() + member.morningTeaCoffee.preference.slice(1)} (Sugar: ${member.morningTeaCoffee.sugar === 'sugar' ? 'Yes' : 'No'})`;
+
+            attendeesSummaryHtml += `
+                <div class="summary-attendee-card mt-4">
+                    <h4><i class="fas fa-user-circle mr-2"></i>${member.firstName} ${member.lastName} ${index === 0 ? '(Main Registrant)' : ''}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        <div><strong>Age/Gender:</strong> <span>${member.age} / ${member.gender}</span></div>
+                        <div><strong>Mobile:</strong> <span>${member.mobile}</span></div>
+                        <div><strong>Attending Dates:</strong> <span>${member.attendingDates.map(d => new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })).join(', ')}</span></div>
+                        <div><strong>Travel:</strong> <span>${member.modeOfTransport} from ${member.cityOfOrigin}</span></div>
+                        <div><strong>Arrival:</strong> <span>${member.arrivalDate} ${member.arrivalTime}</span></div>
+                        <div><strong>Departure:</strong> <span>${member.departureDate} ${member.departureTime}</span></div>
+                        <div><strong>Accommodation:</strong> <span>${member.stayAtHall ? 'Hall' : 'Other'}${member.stayAtHall && member.cotRequired ? ' (Cot)' : ''}</span></div>
+                        <div><strong>Stairs Difficulty:</strong> <span>${member.difficultyClimbingStairs ? 'Yes' : 'No'}</span></div>
+                        <div><strong>Local Assistance:</strong> <span>${member.localAssistance || 'None'}</span></div>
+                        <div><strong>Recordings:</strong> <span>${member.recordingsNeeded || 'None'}</span></div>
+                    </div>
+                    <h5 class="font-semibold text-base mt-4 mb-2"><i class="fas fa-mug-hot mr-2"></i>Morning Tea/Coffee:</h5>
+                    <ul class="list-none text-sm ml-4">
+                        <li>${morningTeaCoffeeDisplay}</li>
+                    </ul>
+                    <h5 class="font-semibold text-base mt-4 mb-2"><i class="fas fa-utensils mr-2"></i>Meals Per Day:</h5>
+                    <ul class="list-none text-sm ml-4">
+                        ${mealsSummary}
+                    </ul>
+                    <p class="mt-4"><strong><i class="fas fa-exclamation-triangle mr-2"></i>Special Requests:</strong> <span>${member.specialRequests || 'None'}</span></p>
+                </div>
+            `;
+        });
+
+        const detailsHtml = `
+            <div class="registration-details-display active">
+                <div class="header">
+                    <h2>Registration Details</h2>
+                    <span class="id-display">${registrationData.registrationId}</span>
+                </div>
+
+                <div class="details-section">
+                    <h4><i class="fas fa-id-badge mr-2"></i>Main Registrant Details</h4>
+                    <p><strong>Name:</strong> <span>${registrationData.mainRegistrant.firstName} ${registrationData.mainRegistrant.lastName}</span></p>
+                    <p><strong>Mobile:</strong> <span>${registrationData.mainRegistrant.mobile}</span></p>
+                    <p><strong>Reference 1:</strong> <span>${registrationData.mainRegistrant.ref1 || 'N/A'}</span></p>
+                    <p><strong>Reference 2:</strong> <span>${registrationData.mainRegistrant.ref2 || 'N/A'}</span></p>
+
+                    <h4 class="mt-6"><i class="fas fa-users mr-2"></i>Attendees (${registrationData.travelDetails.members.length})</h4>
+                    ${attendeesSummaryHtml}
+                </div>
+
+                <div class="footer">
+                    <button class="form-button" onclick="downloadRegistrationDetailsFound('${registrationData.registrationId}')">
+                        <i class="fas fa-download pr-1"></i> Download Details
+                    </button>
+                    <button class="form-button delete-button" onclick="deleteRegistration('${registrationData.registrationId}')">
+                        <i class="fas fa-trash-alt pr-1"></i> Delete Registration
+                    </button>
+                </div>
+            </div>
+        `;
+
+        registrationDetailsArea.innerHTML = detailsHtml;
+        scrollToBottom();
+    }
+
+    /**
+     * Downloads the complete registration data as a text file for a found registration.
+     * @param {string} registrationId - The ID of the registration to download.
+     */
+    function downloadRegistrationDetailsFound(registrationId) {
+        const registrationData = simulatedDynamoDB[registrationId]; // Always use simulated data for download, as backend data might not persist client-side
+        if (!registrationData) {
+            displayMessage('Error: Registration data not found for download.', 'error');
+            return;
+        }
+
+        let downloadText = `--- Gurukul Utsav 2025 Registration Details ---\n`;
+        downloadText += `Registration ID: ${registrationData.registrationId}\n\n`;
+
+        downloadText += `Main Registrant:\n`;
+        downloadText += `  Name: ${registrationData.mainRegistrant.firstName} ${registrationData.mainRegistrant.lastName}\n`;
+        downloadText += `  Mobile: ${registrationData.mainRegistrant.mobile}\n`;
+        downloadText += `  Reference 1: ${registrationData.mainRegistrant.ref1 || 'N/A'}\n`;
+        downloadText += `  Reference 2: ${registrationData.mainRegistrant.ref2 || 'N/A'}\n\n`;
+
+        registrationData.travelDetails.members.forEach((member, index) => {
+            downloadText += `Attendee ${index + 1}: ${member.firstName} ${member.lastName}\n`;
+            downloadText += `  Age/Gender: ${member.age} / ${member.gender}\n`;
+            downloadText += `  Contact: ${member.mobile}\n`;
+            downloadText += `  Attending Dates: ${member.attendingDates.map(d => new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })).join(', ')}\n`;
+            downloadText += `  Travel: ${member.modeOfTransport} from ${member.cityOfOrigin} (Arrive: ${member.arrivalTime}, Depart: ${member.departureTime})\n`;
+            downloadText += `  Accommodation: ${member.stayAtHall ? 'Swapnapoorti Hall' : 'Other'}${member.stayAtHall && member.cotRequired ? ' (Cot Needed)' : ''}\n`;
+            downloadText += `  Stairs Difficulty: ${member.difficultyClimbingStairs ? 'Yes' : 'No'}\n`;
+            downloadText += `  Local Assistance: ${member.localAssistance || 'None'}\n`;
+            downloadText += `  Recordings: ${member.recordingsNeeded || 'None'}\n`;
+
+            downloadText += `  Morning Tea/Coffee: ${member.morningTeaCoffee.preference === 'none' ? 'None' : `${member.morningTeaCoffee.preference.charAt(0).toUpperCase() + member.morningTeaCoffee.preference.slice(1)} (Sugar: ${member.morningTeaCoffee.sugar === 'sugar' ? 'Yes' : 'No'})`}\n`;
+
+            downloadText += `  Meals:\n`;
+            const mealMap = {
+                breakfast: 'Breakfast',
+                lunch: 'Lunch',
+                highTea: 'High Tea',
+                dinner: 'Dinner'
+            };
+            member.attendingDates.forEach(dateYYYYMMDD => {
+                const prefs = member.mealPreferences[dateYYYYMMDD];
+                const displayDate = new Date(dateYYYYMMDD + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+
+                const mealList = [];
+                for (const mealKey in mealMap) {
+                    if (prefs && prefs[mealKey]) {
+                        mealList.push(mealMap[mealKey]);
+                    }
+                }
+                const mealsStr = mealList.length > 0 ? mealList.join(', ') : 'None';
+                const teaCoffeeDisplay = (prefs && prefs.teaCoffeePreference === 'none') || !prefs ? 'None' : `${prefs.teaCoffeePreference.charAt(0).toUpperCase() + prefs.teaCoffeePreference.slice(1)} (Sugar: ${prefs.teaCoffeeSugar === 'sugar' ? 'Yes' : 'No'})`;
+
+                downloadText += `    ${displayDate}: Meals: ${mealsStr} | Beverage: ${teaCoffeeDisplay} ${prefs && prefs.packedFood ? '| Packed Meal' : ''}\n`;
+            });
+            downloadText += `  Special Requests: ${member.specialRequests || 'None'}\n\n`;
+        });
+
+        const filename = `GurukulUtsav_Registration_${registrationId}.txt`;
+        const blob = new Blob([downloadText], { type: 'text/plain;charset=utf-8' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+
+        displayMessage('Registration details downloaded!', 'success');
+    }
+
+    /**
+     * Deletes a registration using the backend API.
+     * @param {string} registrationId - The ID of the registration to delete.
+     */
+    async function deleteRegistration(registrationId) {
+        const confirmed = await showConfirmationModal(
+            'Confirm Deletion',
+            `Are you sure you want to permanently delete registration ID: ${registrationId}? This action cannot be undone.`,
+            'Yes, Delete'
+        );
+
+        if (confirmed) {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/delete-registration/${registrationId}`, {
+                    method: 'DELETE' // Or 'POST' if your backend expects POST for delete and parses body
+                });
+
+                if (response.ok) {
+                    // Also remove from simulated DB for consistency in demo
+                    delete simulatedDynamoDB[registrationId];
+                    displayMessage(`Registration ${registrationId} successfully deleted!`, 'success');
+                    resetSearch(); // Clear the display
+                } else if (response.status === 404) {
+                    displayMessage('Registration not found or already deleted.', 'error');
+                } else {
+                    const errorText = await response.text();
+                    displayMessage(`Failed to delete registration: ${response.statusText} - ${errorText}`, 'error');
+                    console.error('Backend deletion error:', response.status, errorText);
+                }
+            } catch (error) {
+                console.error("Network or backend connection error during deletion:", error);
+                // Try to delete from simulated DB as a fallback, but alert user about backend issue
+                if (simulatedDynamoDB[registrationId]) {
+                    delete simulatedDynamoDB[registrationId];
+                    displayMessage(`Registration ${registrationId} deleted from local data, but backend connection failed.`, 'warning');
+                    resetSearch();
+                } else {
+                    displayMessage('An error occurred while deleting registration. Please try again or check backend.', 'error');
+                }
+            }
+        } else {
+            displayMessage('Deletion cancelled.', 'error');
+        }
+    }
+
+
+    /**
+     * Resets the search input and clears displayed details.
+     */
+    function resetSearch() {
+        registrationIdInput.value = '';
+        registrationIdError.textContent = '';
+        registrationDetailsArea.innerHTML = '';
+        registrationIdInput.focus();
+        scrollToBottom();
+    }
+  </script>
+</body>
+</html>
