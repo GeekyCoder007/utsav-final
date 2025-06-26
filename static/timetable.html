@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utsav Timetable</title>
+    <link rel="icon" href="https://placehold.co/32x32/000000/FFFFFF/png?text=📅">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Define CSS variables for consistent theming and easy adjustments */
+        :root {
+            /* General Palette */
+            --bg-deep-dark: #07090F; /* Even deeper blue-grey/black for ultimate dark */
+            --bg-mid-dark: #121820; /* Deep Blue-Grey start for gradient */
+            --text-primary: #E2E8F0; /* Soft Off-White */
+            --text-secondary: #A0AEC0; /* Muted grey for subtle details */
+
+            /* Accent Colors - Elegant, refined */
+            --accent-emerald: #10B981; /* Darker, richer Emerald (Tailwind Emerald-600) - For date rows, sparkles, button hover */
+            --accent-blue: #3B82F6; /* Richer, darker Blue (Tailwind Blue-600) - For table headers, button */
+            --accent-purple: #7C3AED; /* Subtle purple hint (Tailwind Violet-600) - For background blobs */
+            --accent-gold-main: #FFD700; /* Pure Gold (for H1 title) */
+            --accent-gold-darker: #DAA520; /* Darker Gold (for H1 title glow) */
+
+            /* Glassmorphism / Transparency */
+            --card-background: rgba(18, 25, 35, 0.65); /* More transparent, but richer dark base */
+            --header-background: rgba(5, 8, 12, 0.95); /* Nearly opaque for fixed header */
+            --border-subtle: rgba(255, 255, 255, 0.03); /* Extremely subtle white border */
+            --border-highlight: rgba(255, 255, 255, 0.1); /* Slightly more visible border for hover */
+
+            /* Shadow Effects */
+            --shadow-deep: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 0, 0, 0.4); /* Deeper, more expansive shadow */
+            --shadow-light: 0 5px 20px rgba(0, 0, 0, 0.6); /* Standard element shadow */
+            --shadow-glow-emerald: 0 0 12px var(--accent-emerald), 0 0 25px var(--accent-emerald), 0 0 40px rgba(16, 185, 129, 0.4); /* Multi-layered emerald glow */
+            /* Enhanced golden glow for logos */
+            --shadow-glow-gold-logo: 0 0 25px rgba(255, 255, 0, 1), 0 0 50px rgba(255, 255, 0, 0.8); /* Brighter yellow, higher opacity */
+
+            /* Layout */
+            --header-height: 100px; /* Fixed height for the header */
+            --logo-size: 60px; /* Size for the logos in the header */
+            --logo-margin: 30px; /* Space between logo and title */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif; /* Primary font */
+            background: linear-gradient(135deg, var(--bg-mid-dark) 0%, var(--bg-deep-dark) 100%);
+            color: var(--text-primary);
+            margin: 0;
+            padding: var(--header-height) 2rem 2rem; /* Top padding for fixed header, rest for normal content */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-attachment: fixed; /* Keep background fixed when scrolling */
+            opacity: 0; /* Initial hidden state for body fade-in */
+            transition: opacity 1s ease-out; /* Smooth fade-in for the whole page */
+            position: relative; /* For the animated background blobs */
+            z-index: 0; /* Ensures background is behind other content */
+        }
+        body.loaded {
+            opacity: 1;
+        }
+
+        /* Removed Animated Background Blobs CSS */
+        /*
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.18;
+            filter: blur(180px);
+            z-index: -1;
+            animation: blob-move 30s infinite alternate ease-in-out;
+            will-change: transform;
+        }
+        .blob-1 { background: radial-gradient(circle, var(--accent-blue), transparent 60%); width: 700px; height: 700px; top: -150px; left: -200px; animation-delay: 0s; }
+        .blob-2 { background: radial-gradient(circle, var(--accent-emerald), transparent 60%); width: 800px; height: 800px; bottom: -250px; right: -150px; animation-delay: -7s; }
+        .blob-3 { background: radial-gradient(circle, var(--accent-purple), transparent 60%); width: 600px; height: 600px; top: 20%; right: -100px; animation-delay: -14s; }
+        .blob-4 { background: radial-gradient(circle, var(--accent-blue), transparent 60%); width: 500px; height: 500px; bottom: 5%; left: -100px; animation-delay: -21s; }
+
+        @keyframes blob-move {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(60px, -90px) scale(1.15); }
+            50% { transform: translate(-100px, 120px) scale(0.9); }
+            75% { transform: translate(150px, -60px) scale(1.2); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        */
+
+        /* Fixed Header Styles (Enhanced) */
+        #fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            background-color: var(--header-background);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-deep);
+            border-bottom: 1px solid var(--border-highlight);
+            position: relative; /* Needed for absolute positioning of logos */
+        }
+
+        #fixed-header h1 { /* Target the H1 inside the fixed header */
+            font-family: 'Inter', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-gold-main); /* Set to main accent gold */
+            text-shadow: none;
+            margin: 0; padding: 0; line-height: 1;
+            letter-spacing: 0.05em;
+            position: relative;
+        }
+
+        #fixed-header h1::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+            opacity: 0;
+            animation: text-shimmer 8s infinite ease-out;
+        }
+        @keyframes text-shimmer {
+            0%, 10% { opacity: 0; transform: translateX(-100%) rotate(45deg); }
+            30% { opacity: 0.1; transform: translateX(100%) rotate(45deg); }
+            40%, 100% { opacity: 0; transform: translateX(100%) rotate(45deg); }
+        }
+
+        /* Header Logos (Enhanced Glow) */
+        .header-logo {
+            position: absolute;
+            width: var(--logo-size);
+            height: var(--logo-size);
+            border-radius: 50%;
+            object-fit: cover;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 3px solid #FFFF00; /* Brighter yellow border */
+            box-shadow: var(--shadow-glow-gold-logo); /* Initial gold glow */
+            animation: logo-glow-pulse 2.5s infinite alternate ease-in-out; /* Pulsating glow */
+        }
+        .header-logo.left {
+            left: var(--logo-margin);
+        }
+        .header-logo.right {
+            right: var(--logo-margin);
+        }
+
+        @keyframes logo-glow-pulse {
+            0%, 100% { box-shadow: var(--shadow-glow-gold-logo); }
+            50% { box-shadow: 0 0 35px rgba(255, 255, 0, 1), 0 0 70px rgba(255, 255, 0, 0.9), 0 0 100px rgba(255, 255, 0, 0.7); /* Even more intense and wider spread */ }
+        }
+
+
+        /* Timetable Wrapper (Main Card) - Enhanced Glassmorphism */
+        .timetable-wrapper {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-highlight);
+            border-radius: 16px;
+            box-shadow: var(--shadow-deep);
+            padding: 2rem;
+            width: 100%; max-width: 950px;
+            margin-bottom: 2rem;
+            opacity: 0; transform: translateY(50px) scale(0.95);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        .timetable-wrapper.animate-in {
+            opacity: 1; transform: translateY(0) scale(1);
+            transition-delay: 0.8s;
+        }
+        .timetable-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--accent-emerald), var(--accent-blue), var(--accent-purple));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(5px);
+            /* Removed animation: gradient-border-pulse */
+        }
+        /* Removed @keyframes gradient-border-pulse */
+
+
+        table {
+            width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 1.2rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 1.15rem;
+            color: var(--text-primary);
+        }
+
+        th:first-child { text-align: left; }
+        th:last-child { text-align: center; }
+
+        th {
+            font-family: 'Roboto Mono', monospace;
+            background-color: rgba(30, 41, 59, 0.9);
+            color: var(--accent-blue); /* Keep blue for table headers */
+            font-weight: 700;
+            text-shadow: none;
+            border-radius: 8px 8px 0 0;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        /* Animations for Date and Program Rows (Enhanced) */
+        .date-row, tr.program-row {
+            opacity: 0; transform: translateY(30px) rotateX(15deg) scale(0.9);
+            transform-origin: center bottom;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out, background-color 0.4s ease, box-shadow 0.4s ease;
+            position: relative; overflow: hidden;
+        }
+        .date-row.animate-in, tr.program-row.animate-in {
+            opacity: 1; transform: translateY(0) rotateX(0deg) scale(1);
+        }
+
+        .date-row {
+            background-color: rgba(50, 60, 80, 0.7);
+            color: var(--text-primary); /* Changed to primary text color */
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            border-top: none; /* Removed border */
+            border-bottom: none; /* Removed border */
+            box-shadow: none; /* Removed box-shadow */
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+            border-radius: 8px;
+        }
+        .date-row td {
+            border-bottom: none !important;
+            color: var(--text-primary) !important; /* Changed to primary text color */
+            text-shadow: none; /* Removed text-shadow */
+        }
+        .date-row:hover {
+            /* Removed hover effects */
+            background-color: rgba(50, 60, 80, 0.7); /* Keep same background on hover */
+            cursor: default; /* Change cursor to default */
+        }
+
+        tr.program-row {
+            border-radius: 8px;
+            background-color: rgba(30, 35, 45, 0.8);
+        }
+        tr.program-row:hover {
+            /* Removed hover effects */
+            background-color: rgba(30, 35, 45, 0.8); /* Keep same background on hover */
+            cursor: default; /* Change cursor to default */
+        }
+
+        /* Program Cell and Sparkle Burst Styles (Enhanced) */
+        .program-cell {
+            position: relative; text-align: center; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            gap: 1rem;
+        }
+
+        .program-text {
+            position: relative; z-index: 1; display: inline-block;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .sparkle-burst {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0; transform: scale(0.3);
+            pointer-events: none; z-index: 0;
+            color: var(--accent-emerald);
+            text-shadow: 0 0 10px var(--accent-emerald), 0 0 20px rgba(16, 185, 129, 0.7);
+            will-change: transform, opacity;
+        }
+
+        .sparkle-burst.left {
+            left: 50%;
+            transform: translate(-150%, -50%);
+            animation-delay: 0.1s;
+        }
+        .sparkle-burst.right {
+            left: 50%;
+            transform: translate(50%, -50%);
+            animation-delay: 0.2s;
+        }
+
+        @keyframes sparkle-burst-animation {
+            0% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+            20% { opacity: 1; transform: scale(1.2) rotate(30deg); text-shadow: 0 0 20px var(--accent-emerald), 0 0 40px rgba(16, 185, 129, 0.9); }
+            40% { transform: scale(1) rotate(15deg); }
+            80% { opacity: 0.6; transform: scale(0.8) rotate(0deg); }
+            100% { opacity: 0; transform: scale(0.5) rotate(-15deg); }
+        }
+
+        .sparkle-burst.animate-burst {
+            animation: sparkle-burst-animation 1.8s ease-out forwards;
+        }
+
+
+        /* Back to Home Button (Icon Only) - Enhanced */
+        .home-button {
+            position: fixed; top: 1.5rem; left: 1.5rem;
+            background-color: var(--accent-blue);
+            color: var(--text-primary);
+            width: 3.5rem; height: 3.5rem;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.7rem;
+            text-decoration: none;
+            box-shadow: var(--shadow-light);
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1000;
+            opacity: 0; transform: translateY(-30px) scale(0.8);
+        }
+        .home-button.animate-in {
+            opacity: 1; transform: translateY(0) scale(1);
+            transition-delay: 1.2s;
+        }
+
+        .home-button:hover {
+            background-color: var(--accent-emerald);
+            transform: translateY(-5px) scale(1.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 20px var(--accent-emerald);
+        }
+        .home-button:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #fixed-header h1 { font-size: 2.5rem; }
+            .header-logo {
+                width: 50px; /* Adjust logo size */
+                height: 50px;
+                --logo-margin: 20px; /* Adjust margin */
+            }
+            .timetable-wrapper { padding: 1rem; max-width: 100%; }
+            th, td { padding: 0.8rem 0.5rem; font-size: 1rem; }
+            .date-row { font-size: 1.1rem; padding: 1rem 0.5rem; margin-top: 1rem; }
+            .home-button { width: 2.8rem; height: 2.8rem; font-size: 1.4rem; top: 1rem; left: 1rem; }
+            body { padding-top: 80px; }
+            :root { --header-height: 80px; }
+        }
+
+        @media (max-width: 480px) {
+            #fixed-header h1 { font-size: 1.8rem; letter-spacing: 0.02em; }
+            .header-logo {
+                width: 40px; /* Adjust logo size */
+                height: 40px;
+                --logo-margin: 10px; /* Adjust margin */
+            }
+            .timetable-wrapper { padding: 0.75rem; border-radius: 10px; }
+            th, td { font-size: 0.9rem; padding: 0.6rem 0.4rem; }
+            .date-row { font-size: 1.0rem; padding: 0.8rem 0.4rem; margin-top: 0.75rem; border-radius: 6px; }
+            .program-cell { flex-direction: column; gap: 0.2rem; }
+            .sparkle-burst.left, .sparkle-burst.right {
+                position: relative; left: auto; transform: none; margin: 0; font-size: 1.5rem;
+            }
+            .home-button { width: 2.5rem; height: 2.5rem; font-size: 1.2rem; top: 0.75rem; left: 0.75rem; }
+            body { padding-top: 70px; }
+            :root { --header-height: 70px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Removed Animated Background Blobs -->
+    <!--
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+    <div class="bg-blob blob-4"></div>
+    -->
+
+    <!-- Fixed Header -->
+    <header id="fixed-header">
+        <img src="static/logo.png" alt="Gurukul Logo Left" class="header-logo left">
+        <h1>Utsav Timetable 2025 July, Pune</h1>
+        <img src="static/logo.png" alt="Gurukul Logo Right" class="header-logo right">
+    </header>
+
+    <!-- Back to Home Button -->
+    <a href="/" class="home-button" aria-label="Back to Home">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <div class="timetable-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Program</th>
+                </tr>
+            </thead>
+            <tbody id="timetable-body">
+                <!-- Timetable rows will be dynamically loaded here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const timetableData = [
+  { "date": "08 July 2025", "program": "Welcome" },
+  { "date": "08 July 2025", "program": "Open Session" },
+  { "date": "08 July 2025", "program": "Shejarti" },
+  { "date": "09 July 2025", "program": "Bhupali" },
+  { "date": "09 July 2025", "program": "GaayanSeva" },
+  { "date": "09 July 2025", "program": "Gurupoojan" },
+  { "date": "09 July 2025", "program": "Sampada" },
+  { "date": "09 July 2025", "program": "Ashwini Patwardhan" },
+  { "date": "09 July 2025", "program": "Rajani" },
+  { "date": "09 July 2025", "program": "Palakhi" },
+  { "date": "09 July 2025", "program": "Open Session" },
+  { "date": "09 July 2025", "program": "Shejarti" },
+  { "date": "10 July 2025", "program": "Bhupali" },
+  { "date": "10 July 2025", "program": "Organized Bhajan" },
+  { "date": "10 July 2025", "program": "Gurupoojan" },
+  { "date": "10 July 2025", "program": "Chandrakant" },
+  { "date": "10 July 2025", "program": "Raghu" },
+  { "date": "10 July 2025", "program": "Amar" },
+  { "date": "10 July 2025", "program": "External singer" },
+  { "date": "10 July 2025", "program": "Open Session" },
+  { "date": "10 July 2025", "program": "Shejarti" },
+  { "date": "11 July 2025", "program": "Bhupali" },
+  { "date": "11 July 2025", "program": "Bhajan" },
+  { "date": "11 July 2025", "program": "Gurupoojan" },
+  { "date": "11 July 2025", "program": "Date kaka" },
+  { "date": "11 July 2025", "program": "Samaroap - Gokhale" }
+]
+
+
+        const timetableBody = document.getElementById('timetable-body');
+
+        /**
+         * Renders the timetable rows and applies staggered animations.
+         */
+        function renderTimetable() {
+            let lastDate = null;
+            timetableBody.innerHTML = ''; // Clear existing content
+            let delay = 0; // Cumulative delay for staggered animation
+
+            timetableData.forEach(event => {
+                // If the date changes, add a date header row
+                if (event.date !== lastDate) {
+                    const dateRow = document.createElement('tr');
+                    dateRow.classList.add('date-row');
+                    dateRow.innerHTML = `<td colspan="2">${event.date}</td>`;
+                    timetableBody.appendChild(dateRow);
+
+                    // Animate date row
+                    setTimeout(() => {
+                        dateRow.classList.add('animate-in');
+                    }, delay);
+                    delay += 250; // Increased delay for each new date row for more impact
+                    lastDate = event.date;
+                }
+
+                // Add the program row
+                const programRow = document.createElement('tr');
+                programRow.classList.add('program-row');
+
+                // Add an empty cell for the date column to maintain table structure
+                const emptyDateCell = document.createElement('td');
+                programRow.appendChild(emptyDateCell);
+
+                // Create the content cell for the program with sparkle bursts
+                const programCell = document.createElement('td');
+                programCell.classList.add('program-cell');
+                programCell.innerHTML = `
+                    <span class="sparkle-burst left">✨</span>
+                    <span class="program-text">${event.program}</span>
+                    <span class="sparkle-burst right">✨</span>
+                `;
+                programRow.appendChild(programCell);
+                timetableBody.appendChild(programRow);
+
+                // Animate program row and sparkles
+                setTimeout(() => {
+                    programRow.classList.add('animate-in');
+                    // Trigger sparkle animation after row is visible
+                    const sparkles = programRow.querySelectorAll('.sparkle-burst');
+                    sparkles.forEach(sparkle => {
+                        sparkle.classList.add('animate-burst');
+                    });
+                }, delay);
+                delay += 150; // Increased delay for each program row for smoother stagger
+            });
+        }
+
+        // --- Master Animation Orchestration ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const timetableWrapper = document.querySelector('.timetable-wrapper');
+            const homeButton = document.querySelector('.home-button');
+
+            // 1. Fade in the body
+            body.classList.add('loaded');
+
+            // 2. Animate the timetable wrapper
+            timetableWrapper.classList.add('animate-in');
+
+            // 3. Render and animate table rows *after* timetable wrapper animation starts
+            setTimeout(() => {
+                renderTimetable();
+            }, 1000 + 800); // body transition (1s) + timetable-wrapper transition-delay (0.5s) + a small buffer (0.3s)
+
+            // 4. Animate the Home button
+            homeButton.classList.add('animate-in');
+        });
+    </script>
+</body>
+</html>
