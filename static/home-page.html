@@ -121,7 +121,7 @@
             z-index: 0; /* Ensure body is a stacking context */
         }
 
-        /* Body pseudo-element for background patterns (Ganesh outline, swirls) */
+        /* Removed body::before for background patterns */
         body::before {
             content: '';
             position: fixed;
@@ -129,18 +129,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image:
-                url('https://i.imgur.com/gK9qN7f.png'), /* Central Ganesh ji outline */
-                url('https://i.imgur.com/K3pW1yZ.png'), /* Swirl pattern top-left */
-                url('https://i.imgur.com/K3pW1yZ.png'); /* Swirl pattern bottom-right */
-            background-position: center center, top 5% left 5%, bottom 5% right 5%;
-            background-repeat: no-repeat, no-repeat, no-repeat;
-            background-size: 60% auto, 20% auto, 20% auto; /* Adjust sizes for effect */
-            opacity: 0.05; /* Very subtle in dark mode */
-            filter: invert(100%); /* Invert for dark theme contrast */
-            z-index: -1; /* Behind other content */
-            pointer-events: none; /* Do not interfere with clicks */
-            transition: opacity 0.5s ease, filter 0.5s ease, background-image 0.5s ease;
+            /* Removed background-image properties */
+            opacity: 0; /* Ensure it's hidden */
+            z-index: -1;
+            pointer-events: none;
+            transition: opacity 0.5s ease, filter 0.5s ease;
         }
 
         /* Splash Screen Styles */
@@ -266,46 +259,25 @@
         .card.border-spiritual-gold::before { --glow-color: #ffb703; } /* For the new card */
 
 
-        /* Element of Surprise for Light Mode: Subtle Pulsating Glow */
+        /* Removed Element of Surprise for Light Mode: Subtle Pulsating Glow */
         body::after {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 0; /* Start small */
-            height: 0; /* Start small */
+            width: 0;
+            height: 0;
             border-radius: 50%;
-            background: radial-gradient(circle at center, rgba(255, 230, 180, 0.4) 0%, rgba(255, 230, 180, 0) 70%); /* Soft, warm glow */
+            background: none; /* No background */
             transform: translate(-50%, -50%);
-            z-index: -2; /* Below content and Ganesh outline */
-            opacity: 0; /* Hidden by default */
-            transition: opacity 0.5s ease; /* Smooth fade for theme change */
-            animation: none; /* No animation in dark mode */
-            pointer-events: none; /* Do not interfere with clicks */
+            z-index: -2;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            animation: none;
+            pointer-events: none;
         }
 
-        .light body::after {
-            opacity: 1; /* Visible in light mode */
-            animation: pulse-glow 6s infinite ease-in-out alternate; /* Subtle, long pulse animation */
-        }
-
-        @keyframes pulse-glow {
-            0% {
-                width: 50vw;
-                height: 50vw;
-                opacity: 0.2;
-            }
-            50% {
-                width: 60vw;
-                height: 60vw;
-                opacity: 0.35;
-            }
-            100% {
-                width: 50vw;
-                height: 50vw;
-                opacity: 0.2;
-            }
-        }
+        /* Removed .light body::after and @keyframes pulse-glow */
 
         /* Specific styles for light mode activated by JS via the 'light' class on HTML */
         .light body {
@@ -319,15 +291,9 @@
 
         /* Adjust Ganesh image/patterns for light mode to blend with new warm background */
         .light body::before {
-            filter: grayscale(10%) brightness(110%) opacity(0.08); /* Less inversion, more brightness, slightly increased opacity */
-            opacity: 0.08; /* Slightly more visible in light mode */
-            background-image:
-                url('https://i.imgur.com/gK9qN7f.png'), /* Central Ganesh ji outline */
-                url('https://i.imgur.com/K3pW1yZ.png'), /* Swirl pattern top-left */
-                url('https://i.imgur.com/K3pW1yZ.png'); /* Swirl pattern bottom-right */
-            background-position: center center, top 5% left 5%, bottom 5% right 5%;
-            background-repeat: no-repeat, no-repeat, no-repeat;
-            background-size: 60% auto, 20% auto, 20% auto; /* Adjust sizes for effect */
+            filter: none; /* No filter */
+            opacity: 0; /* Hidden */
+            background-image: none; /* No image */
         }
 
 
@@ -846,8 +812,8 @@
         </div>
     </footer>
 
-    <!-- Sparkle Overlay -->
-    <div id="sparkle-overlay"></div>
+    <!-- Removed Sparkle Overlay -->
+    <div id="sparkle-overlay" style="visibility: hidden;"></div>
 
     <!-- Video Modal -->
     <div id="video-modal-overlay">
@@ -935,7 +901,7 @@
             typeWriter();
         }
 
-        // --- Sparkle Generation Logic ---
+        // --- Sparkle Generation Logic (REMOVED: Now the function ensures no sparkles are created if overlay hidden) ---
         const createSparkle = () => {
             const sparkleOverlay = document.getElementById('sparkle-overlay');
             // Only create sparkles if the overlay is visible (i.e., in dark mode)
@@ -1064,10 +1030,10 @@
             // Initialize button text based on current theme
             if (htmlElement.classList.contains('dark')) {
                 toggleButton.textContent = 'Light Theme';
-                startSparkles(); // Start sparkles if initially in dark mode
+                // No need to start sparkles here, as body::after is removed.
             } else {
                 toggleButton.textContent = 'Dark Theme';
-                stopSparkles(); // Stop sparkles if initially in light mode
+                // No need to stop sparkles here.
             }
 
             // After 3 seconds, fade out splash screen and reveal main content
@@ -1080,7 +1046,7 @@
                     // Explicitly enable vertical scrolling when content might overflow on the body itself
                     document.body.style.overflowY = 'auto';
                     startTypewriter(); // Start the typewriter animation
-                    // Sparkles are already handled by initial theme check or toggle function
+                    // Sparkles are no longer part of the theme, so no call here
                 }, { once: true }); // Ensure event listener runs only once
             }, 3000); // Increased to 3000 milliseconds = 3 seconds
         };
