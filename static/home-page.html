@@ -629,7 +629,7 @@
             box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
             z-index: 101; /* Above overlay */
             transition: left 0.3s ease;
-            display: flex;
+            display: flex; /* Make sidebar a flex container */
             flex-direction: column;
             gap: 0; /* Removed gap between elements for tighter spacing */
         }
@@ -649,6 +649,21 @@
         #sidebar a:hover {
             background-color: #2f2f4a;
             color: #ffb703;
+        }
+
+        /* Style for the theme toggle button inside the sidebar */
+        #sidebar #theme-toggle {
+            /* Remove absolute positioning */
+            position: static;
+            margin-top: auto; /* Push it to the bottom of the flex container */
+            margin-left: 0.75rem; /* Indent slightly to align with links */
+            margin-right: 0.75rem;
+            margin-bottom: 1rem; /* Space from bottom of sidebar */
+            width: calc(100% - 1.5rem); /* Adjust width to fit padding */
+            justify-content: center; /* Center content within the button */
+            display: flex; /* Ensure flex for icon and text */
+            align-items: center;
+            gap: 0.5rem; /* Space between icon and text */
         }
 
         #hamburger-icon {
@@ -705,7 +720,7 @@
 <body class="bg-dark-bg text-gray-100 min-h-screen flex flex-col items-center p-4">
 
     <div id="splash-screen">
-        <img id="guru-image" src="static/img.png" alt="Guru Image">
+        <img id="guru-image" src="static/img.png" alt="Guru Image" onerror="this.onerror=null; console.error('Failed to load image: static/img.png'); this.src='https://placehold.co/450x450/FFC107/000000?text=Guru+Image+Fallback';">
     </div>
 
     <!-- Hamburger Icon -->
@@ -723,11 +738,13 @@
         <a href="/shop">Go to shop</a>
         <a href="/admin">Admin's page</a>
         <a href="/timetable">View Utsav Timetable</a>
+        <!-- Theme Toggle Button moved here -->
+        <button id="theme-toggle" class="toggle-button py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-accent-orange focus:ring-opacity-75">
+            <i class="fas fa-sun text-yellow-300" id="sun-icon"></i>
+            <i class="fas fa-moon text-blue-300 hidden" id="moon-icon"></i>
+            <span id="theme-text">Toggle Theme</span>
+        </button>
     </nav>
-
-    <button id="theme-toggle" class="toggle-button absolute top-4 right-4 py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-accent-orange focus:ring-opacity-75">
-        Toggle Theme
-    </button>
 
     <div class="w-full max-w-4xl text-center hidden flex-grow" id="main-content">
         <header class="mb-12">
@@ -801,14 +818,14 @@
     </div>
 
     <footer class="mt-auto">
-        <p>Developed with love ❤️</p>
+        <p>Developed with ❤️</p>
         <div class="paduka-images-container">
-            <img src="static/logo.png" alt="Paduka Left" class="paduka-image">
+            <img src="static/logo.png" alt="Paduka Left" class="paduka-image" onerror="this.onerror=null; console.error('Failed to load image: static/logo.png'); this.src='https://placehold.co/120x120/FFD700/000000?text=Logo+Fallback';">
             <p class="footer-shlok">
                 गुरुर्ब्रह्मा गुरुर्विष्णुः गुरुर्देवो महेश्वरः ।<br>
                 गुरुः साक्षात् परब्रह्म तस्मै श्री गुरवे नमः ॥
             </p>
-            <img src="static/logo.png" alt="Paduka Right" class="paduka-image">
+            <img src="static/logo.png" alt="Paduka Right" class="paduka-image" onerror="this.onerror=null; console.error('Failed to load image: static/logo.png'); this.src='https://placehold.co/120x120/FFD700/000000?text=Logo+Fallback';">
         </div>
     </footer>
 
@@ -819,8 +836,8 @@
     <div id="video-modal-overlay">
         <div class="video-modal-content">
             <button class="video-modal-close-button" onclick="closeVideoModal()">&times;</button>
-            <video id="invitation-video" controls>
-                <source src="static/invitation-video.mp4" type="video/mp4">
+            <video id="invitation-video" controls onerror="this.onerror=null; console.error('Video element encountered an error.');">
+                <source src="static/invitation-video.mp4" type="video/mp4" onerror="this.onerror=null; console.error('Failed to load video source: static/invitation-video.mp4');">
                 Your browser does not support the video tag.
             </video>
             </div>
@@ -831,16 +848,24 @@
         document.getElementById('theme-toggle').addEventListener('click', function() {
             const htmlElement = document.documentElement;
             const toggleButton = document.getElementById('theme-toggle');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            const themeText = document.getElementById('theme-text');
+
 
             if (htmlElement.classList.contains('dark')) {
                 htmlElement.classList.remove('dark');
                 htmlElement.classList.add('light');
-                toggleButton.textContent = 'Dark Theme';
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                themeText.textContent = 'Dark Theme';
                 stopSparkles(); // Stop sparkles in light mode
             } else {
                 htmlElement.classList.remove('light');
                 htmlElement.classList.add('dark');
-                toggleButton.textContent = 'Light Theme';
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                themeText.textContent = 'Light Theme';
                 startSparkles(); // Start sparkles in dark mode
             }
         });
@@ -951,7 +976,7 @@
             }
             // Hide sparkle overlay
             const sparkleOverlay = document.getElementById('sparkle-overlay');
-            if (sparkleOverlay) sparkleOverlay.style.visibility = 'hidden';
+            if (sparkleOverlay) sparklepleOverlay.style.visibility = 'hidden';
 
             // Immediately remove existing sparkles
             const existingSparkles = document.querySelectorAll('.sparkle');
@@ -1014,27 +1039,35 @@
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
             });
+
+            // Initial theme setup (moved here from window.onload)
+            const htmlElement = document.documentElement;
+            const toggleButton = document.getElementById('theme-toggle');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            const themeText = document.getElementById('theme-text');
+
+            if (htmlElement.classList.contains('dark')) {
+                toggleButton.textContent = 'Light Theme'; // Initial text when in dark mode
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                themeText.textContent = 'Light Theme';
+            } else {
+                toggleButton.textContent = 'Dark Theme'; // Initial text when in light mode
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                themeText.textContent = 'Dark Theme';
+            }
         });
 
 
         // Logic for splash screen and main content loading
         window.onload = function() {
-            const htmlElement = document.documentElement;
-            const toggleButton = document.getElementById('theme-toggle');
             const splashScreen = document.getElementById('splash-screen');
             const mainContent = document.getElementById('main-content');
 
             // Set #main-content to relative for sparkle positioning
             mainContent.style.position = 'relative';
-
-            // Initialize button text based on current theme
-            if (htmlElement.classList.contains('dark')) {
-                toggleButton.textContent = 'Light Theme';
-                // No need to start sparkles here, as body::after is removed.
-            } else {
-                toggleButton.textContent = 'Dark Theme';
-                // No need to stop sparkles here.
-            }
 
             // After 3 seconds, fade out splash screen and reveal main content
             setTimeout(() => {
