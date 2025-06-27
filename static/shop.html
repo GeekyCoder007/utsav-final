@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Essential for responsiveness: Sets the viewport width to the device width and initial zoom level. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gurukul Utsav Book Shop</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -70,7 +71,8 @@
             --bot-message-bg: rgba(43, 46, 62, 0.7);
             --summary-card-bg: rgba(255, 255, 255, 0.1);
 
-            /* Zoom variables */
+            /* Zoom variables - these dynamically adjust font size and container max-width via JavaScript,
+               contributing to overall responsiveness and user control over scaling. */
             --global-font-size: 16px; /* Base font size for 'rem' calculation */
             --container-max-width: 600px; /* Base max-width for container */
         }
@@ -101,9 +103,26 @@
             background-color: var(--bg-color);
             color: var(--text-color-primary);
             transition: background-color 0.5s ease, color 0.5s ease;
-            font-size: var(--global-font-size); /* Apply global font size */
-            overflow: hidden; /* Prevent scroll on body during splash */
+            font-size: var(--global-font-size); /* Applies responsive font size via JS */
+            overflow-x: hidden; /* Crucial: Prevents horizontal scrolling on all devices */
         }
+
+        /* Custom scrollbar for the body for a nicer look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e0e0e0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
 
         /* ------------------------------ */
         /* Dynamic Evolving Waves         */
@@ -137,7 +156,7 @@
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
         .animate-fade-out { animation: fadeOut 1.5s ease-in-out forwards; }
 
-        /* Splash Image - Central Logo */
+        /* Splash Image - Central Logo (Uses responsive Tailwind classes for size) */
         @keyframes splash-image-pop {
             0% { opacity: 0; transform: scale(0.5); }
             100% { opacity: 1; transform: scale(1); }
@@ -151,7 +170,7 @@
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
-        /* Main Splash Text */
+        /* Main Splash Text (Uses responsive Tailwind classes for font size) */
         @keyframes splash-title-fade-in {
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -182,12 +201,14 @@
             border: 1px solid var(--glass-border);
             box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 0 0 1.5px rgba(255, 255, 255, 0.05);
             transition: background-color 0.5s ease, border 0.5s ease, max-width 0.3s ease; /* Add max-width transition */
-            max-width: var(--container-max-width); /* Controlled by JS zoom */
-            max-height: 95vh; /* Limit height of the entire window */
-            overflow-y: auto; /* Make the entire glass container scrollable */
+            /* Max width of the main content area, controlled by JS zoom for user preference,
+               and `w-full` for full width on smaller screens */
+            max-width: var(--container-max-width);
+            max-height: 95vh; /* Limits the height of the container to ensure it fits on most screens */
+            overflow-y: auto; /* Enables vertical scrolling for content within the glass container, crucial for "nice scroll" */
         }
 
-        /* Scrollbar styles for the main container */
+        /* Scrollbar styles for the main container, contributing to "nice scroll" */
         .glass-container::-webkit-scrollbar { width: 6px; }
         .glass-container::-webkit-scrollbar-track { background: transparent; }
         .glass-container::-webkit-scrollbar-thumb { background-color: var(--scroll-thumb-bg); border-radius: 3px; }
@@ -213,11 +234,11 @@
             box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhanced focus shadow */
         }
 
-        /* Specific styling for phone input group to use flexbox */
+        /* Specific styling for phone input group to use flexbox for responsive alignment */
         .phone-input-group {
-            display: flex;
-            align-items: center; /* Align items to the center for a cohesive look */
-            gap: 0.5rem; /* Space between country code and phone number input */
+            display: flex; /* Uses flexbox for horizontal layout */
+            align-items: center; /* Aligns items vertically in center */
+            gap: 0.5rem; /* Space between elements */
             border: 1px solid var(--glass-border); /* Shared border for the whole group */
             border-radius: 0.5rem; /* Rounded corners for the group */
             background-color: var(--form-field-bg); /* Shared background */
@@ -266,7 +287,7 @@
         .phone-input-group input[type="tel"] {
             border: none; /* Remove individual border */
             background-color: transparent; /* Make background transparent */
-            flex-grow: 1; /* Allow it to take remaining space */
+            flex-grow: 1; /* Allows the input to take remaining space, contributing to fluid width */
             padding: 0.75rem; /* Consistent padding */
             outline: none;
             color: var(--text-color-primary);
@@ -285,9 +306,9 @@
             border-radius: 0.75rem;
             padding: 0.75rem 1rem;
             margin-bottom: 0.75rem;
-            display: flex;
+            display: flex; /* Uses flexbox for horizontal arrangement of text and quantity controls */
             align-items: center;
-            justify-content: space-between;
+            justify-content: space-between; /* Pushes content to ends */
             color: var(--text-color-primary);
             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease; /* Added transform */
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle initial shadow */
@@ -312,15 +333,15 @@
 
         /* Quantity controls */
         .quantity-control {
-            display: flex;
+            display: flex; /* Uses flexbox for alignment of buttons and input */
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.5rem; /* Space between quantity elements */
         }
         .quantity-control button {
             background-color: var(--form-button-bg);
             color: white;
-            width: 32px;
-            height: 32px;
+            width: 32px; /* Fixed width, but small enough not to cause overflow */
+            height: 32px; /* Fixed height */
             border-radius: 50%;
             font-size: 1.2em;
             display: flex;
@@ -338,7 +359,7 @@
             transform: scale(0.9);
         }
         .quantity-control input[type="text"] {
-            width: 48px;
+            width: 48px; /* Fixed width, but small */
             padding: 0.25rem 0.5rem;
             text-align: center;
             background-color: var(--form-field-bg);
@@ -351,7 +372,7 @@
 
 
         #total-price {
-            font-size: 1.5em;
+            font-size: 1.5em; /* Responsive via rem and parent font size */
             font-weight: 700;
             color: var(--text-color-primary);
             text-align: right;
@@ -381,7 +402,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Theme and Zoom buttons */
+        /* Theme and Zoom buttons (using flexbox for responsive layout) */
         .settings-button {
             background-color: var(--settings-highlight-bg);
             border: 1px solid var(--glass-border);
@@ -427,22 +448,22 @@
         #message-box.success { background-color: #22c55e; }
         #message-box.error { background-color: #ef4444; }
 
-        /* Bot Message Styling (similar to previous registration form) */
+        /* Bot Message Styling (responsive layout with flexbox) */
         .bot-message {
             background: var(--bot-message-bg);
             color: var(--text-color-primary);
             align-self: flex-start; /* Align to the left */
             border-radius: 1.5rem; /* Large radius for a bubble effect */
             border-bottom-left-radius: 0.5rem; /* Smoother corner on one side */
-            display: flex; /* Make it a flex container */
-            align-items: flex-start; /* Align icon and text at the top */
+            display: flex; /* Uses flex for avatar and text content */
+            align-items: flex-start; /* Aligns avatar and text at the top */
             padding: 1rem 1.5rem; /* Adjust padding for icon */
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
             border: 1px solid rgba(255, 255, 255, 0.05);
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.5s ease-in-out;
-            max-width: 90%; /* Limit width */
+            max-width: 90%; /* Limits width, allowing text to wrap responsively */
             margin-bottom: 1.5rem; /* Space below message */
         }
         .bot-message.active {
@@ -450,20 +471,22 @@
             transform: translateY(0);
         }
         .bot-message .bot-avatar {
-            width: 120px; /* w-10 */
-            height: 120px; /* h-10 */
+            /* Adjusted size for better text containment on small screens */
+            width: 2.5rem; /* w-10 (40px) */
+            height: 2.5rem; /* h-10 (40px) */
             border-radius: 50%; /* rounded-full */
             object-fit: cover;
             margin-right: 0.75rem; /* mr-3 */
-            flex-shrink: 0; /* Prevent avatar from shrinking */
+            flex-shrink: 0; /* Prevents avatar from shrinking */
             border: 2px solid var(--form-button-bg); /* Small border for bot avatar */
         }
-        /* New: Styling for the text content within bot message */
+        /* Styling for the text content within bot message */
         .bot-message .bot-text-content {
-            flex-grow: 1; /* Allow text content to take remaining space */
+            flex-grow: 1; /* Allows text content to take remaining space and wrap */
             font-size: 1.15em; /* Make text bigger */
             font-weight: 600; /* Make text bolder */
             line-height: 1.5; /* Improve readability with more line spacing */
+            word-break: break-word; /* Ensures long words break to fit in container */
         }
         .bot-message .bot-text-content strong {
             color: white; /* Ensure strong text is very clear */
@@ -473,7 +496,7 @@
         }
 
 
-        /* Purchase Summary Modal Styles */
+        /* Purchase Summary Modal Styles (responsive with max-width and percentage width) */
         .purchase-summary-modal-overlay {
             position: fixed;
             inset: 0;
@@ -498,11 +521,11 @@
             border-radius: 1.5rem;
             padding: 2.5rem;
             color: var(--text-color-primary);
-            width: 90%;
-            max-width: 500px;
+            width: 90%; /* Responsive: takes 90% of screen width on smaller devices */
+            max-width: 500px; /* Limits max width on larger screens */
             transform: scale(0.9);
             transition: transform 0.3s ease;
-            overflow-y: auto; /* Allow content to scroll if too long */
+            overflow-y: auto; /* Allows scrolling within the modal if content is too long */
             max-height: 85vh; /* Max height for modal content */
         }
         .purchase-summary-modal-overlay.show .purchase-summary-modal-content {
@@ -554,13 +577,13 @@
             color: var(--text-color-primary); /* Darker text in light mode */
         }
         .purchase-summary-modal-actions {
-            display: flex;
-            flex-direction: column;
+            display: flex; /* Uses flexbox for buttons */
+            flex-direction: column; /* Stacks buttons vertically on all screens */
             gap: 1rem;
             margin-top: 2rem;
         }
         .purchase-summary-modal-actions button {
-            width: 100%;
+            width: 100%; /* Buttons take full width, good for mobile */
             padding: 0.9rem 1.5rem;
             font-size: 1.1em;
         }
@@ -580,18 +603,18 @@
 
         /* NEW: Final Confirmation Action Bar (Bot Message Style) */
         #final-confirmation-action-bar {
-            position: sticky; /* Make it sticky to the bottom of its scrollable parent */
+            position: sticky; /* Keeps the bar at the bottom of its scrollable parent */
             bottom: 0;
             margin-top: auto; /* Pushes it to the bottom in a flex-col container */
 
             padding: 1rem 1.5rem; /* Match bot message padding */
-            width: 100%;
+            width: 100%; /* Takes full width */
             background: var(--bot-message-bg); /* Use bot message background */
             backdrop-filter: blur(15px); /* Stronger blur */
             border: 1px solid rgba(255, 255, 255, 0.05); /* Match bot message border */
             z-index: 30; /* Ensure it's above normal content but below modals */
 
-            display: flex; /* Use flex for layout with avatar */
+            display: flex; /* Uses flex for layout with avatar and content */
             align-items: flex-start; /* Align avatar and content to the top */
             gap: 0.75rem; /* Space between avatar and content */
 
@@ -612,8 +635,8 @@
         }
 
         #final-confirmation-action-bar .bot-avatar {
-            width: 120px; /* Match bot message avatar size */
-            height: 120px;
+            width: 2.5rem; /* Match bot message avatar size for responsiveness */
+            height: 2.5rem; /* Match bot message avatar size for responsiveness */
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0; /* Prevent avatar from shrinking */
@@ -621,53 +644,45 @@
         }
 
         #final-confirmation-action-bar .content-wrapper {
-            flex-grow: 1; /* Allow content to take remaining space */
-            display: flex; /* This is the key change to ensure internal stacking */
-            flex-direction: column; /* Ensure text and buttons stack vertically */
+            flex-grow: 1; /* Allows content to take remaining space */
+            display: flex; /* Ensures internal stacking of text and buttons */
+            flex-direction: column; /* Stacks text and buttons vertically */
             align-items: flex-start; /* Align items to the left within the content wrapper */
-            min-width: 0; /* Allow content-wrapper to shrink if needed */
+            min-width: 0; /* Allows content-wrapper to shrink if needed */
         }
 
         #final-confirmation-action-bar #final-confirmation-text {
-            font-size: 1.15em; /* Match bot message text size */
+            font-size: 1.15em; /* Responsive via rem and parent font size */
             font-weight: 600; /* Match bot message text weight */
             color: var(--text-color-primary);
             text-align: left; /* Text alignment within its own wrapper */
             margin-bottom: 1rem; /* Space between text and buttons */
             line-height: 1.5; /* Match bot message line height */
-            word-break: break-word; /* Ensure long text breaks */
+            word-break: break-word; /* Ensures long text breaks to prevent overflow */
         }
 
         #final-confirmation-action-bar .button-group {
-            display: flex;
+            display: flex; /* Uses flexbox for buttons */
             gap: 1rem;
-            width: 100%; /* Make buttons take full width on small screens */
-            flex-wrap: wrap; /* Allow buttons to wrap to next line if needed */
+            width: 100%; /* Buttons take full width */
+            flex-wrap: wrap; /* Allows buttons to wrap to the next line on small screens */
         }
         #final-confirmation-action-bar .button-group button {
-            flex: 1; /* Make buttons share space equally */
+            flex: 1; /* Makes buttons share space equally */
             padding: 0.9rem 1.5rem; /* Larger buttons */
             font-size: 1.1em;
-            min-width: 120px; /* Ensure buttons don't get too small */
+            min-width: 120px; /* Ensures buttons don't get too small */
         }
 
-        @media (min-width: 640px) { /* sm breakpoint */
+        @media (min-width: 640px) { /* sm breakpoint (Tailwind default) */
             #final-confirmation-action-bar {
                 padding: 1.5rem 2rem; /* Adjusted padding for larger screens */
                 /* Keep bot message bubble shape consistent across sizes */
                 border-radius: 1.5rem;
                 border-bottom-left-radius: 0.5rem;
             }
-            /* Remove explicit flex-direction changes for content-wrapper here, it's always column */
             #final-confirmation-action-bar .content-wrapper {
-                /* No change to flex-direction from base */
                 align-items: flex-start; /* Ensure items stay left-aligned */
-            }
-            #final-confirmation-action-bar #final-confirmation-text {
-                /* No change here, text stays above buttons */
-            }
-            #final-confirmation-action-bar .button-group {
-                /* No change here, buttons stay below text */
             }
         }
         /* Fix for light mode text color on final confirmation bar */
@@ -687,8 +702,10 @@
 
     <!-- Splash Screen -->
     <div id="splash" class="fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm bg-[var(--splash-bg)]">
+        <!-- Image uses responsive Tailwind classes `w-32 h-32 md:w-40 md:h-40` for scaling -->
         <img id="splash-image" src="https://placehold.co/150x150/FFD700/000000?text=Book" alt="Book Shop Logo" class="w-32 h-32 md:w-40 md:h-40 object-contain mb-8 shadow-2xl rounded-full hidden">
 
+        <!-- Title uses responsive Tailwind classes `text-3xl sm:text-4xl md:text-5xl` for scaling -->
         <h1 id="splash-main-title" class="text-white text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide text-center px-4 mb-8 opacity-0">
             Rajaram Gurukul Utsav Book Shop
         </h1>
@@ -700,7 +717,7 @@
         <span id="message-text"></span>
     </div>
 
-    <!-- Purchase Summary Modal Overlay -->
+    <!-- Purchase Summary Modal Overlay (Responsive) -->
     <div id="purchase-summary-modal-overlay" class="purchase-summary-modal-overlay">
         <div class="purchase-summary-modal-content">
             <h2><i class="fas fa-shopping-cart mr-2"></i>Final Confirmation: Review Your Booking!</h2>
@@ -719,8 +736,10 @@
 
     <!-- Main Content -->
     <div id="main-content" class="relative z-10 flex items-center justify-center min-h-screen p-2 md:p-4 overflow-auto hidden opacity-0 transition-opacity duration-500">
+        <!-- Glass Container: Controls the main content area's responsiveness -->
         <div class="glass-container flex flex-col w-full rounded-3xl p-6 sm:p-8">
 
+            <!-- Header Section (Responsive) -->
             <div class="flex items-center justify-between p-4 border-b border-white/10 flex-wrap gap-2 mb-4">
                 <h1 class="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 tracking-wide">
                     RajaramGurukul Shop
@@ -745,14 +764,16 @@
                 </div>
             </div>
 
-            <!-- Bot Message Container -->
+            <!-- Bot Message Container (Content adapts to width) -->
             <div id="bot-message-container" class="flex flex-col items-start px-2 py-4">
                 <!-- Bot messages will be appended here -->
             </div>
 
+            <!-- Main Shop/Form Content (Content will wrap within its container) -->
             <div class="container bg-transparent shadow-none p-0 max-w-full">
                 <h2 class="text-2xl font-bold text-white mb-6"><i class="fas fa-book-open mr-2"></i>Buy Your Books</h2>
 
+                <!-- Input Groups (Responsive: w-full for full width) -->
                 <div class="input-group mb-4">
                     <label for="first-name" class="block mb-2 text-sm font-medium">First Name</label>
                     <input type="text" id="first-name" class="w-full p-3 rounded-lg text-sm" required>
@@ -762,6 +783,7 @@
                     <input type="text" id="last-name" class="w-full p-3 rounded-lg text-sm" required>
                 </div>
 
+                <!-- Phone Input Group (Responsive: flex for internal elements) -->
                 <div class="input-group mb-6">
                     <label class="block mb-2 text-sm font-medium">Phone Number</label>
                     <div class="phone-input-group">
@@ -1038,6 +1060,11 @@
 
                         // Only then render the books
                         renderBooks();
+                        // Explicitly scroll to top after all initial content is rendered
+                        const glassContainer = document.querySelector('.glass-container');
+                        if (glassContainer) {
+                            glassContainer.scrollTop = 0;
+                        }
                     }, 50);
                 }, { once: true });
             }, 2500); // Total splash animation duration approx 2.5 seconds
@@ -1048,11 +1075,11 @@
             bookListDiv.innerHTML = ''; // Clear existing list
             books.forEach(book => {
                 const div = document.createElement('div');
-                div.className = 'book-item';
+                div.className = 'book-item'; // This class uses flexbox for responsive layout of each book item
                 div.setAttribute('data-id', book.id); // Set data-id on the div for easy lookup
                 div.innerHTML = `
                     <span><i class="fas fa-book mr-2"></i>${book.name} (₹${book.price})</span>
-                    <div class="quantity-control">
+                    <div class="quantity-control"> <!-- This class uses flexbox for quantity buttons and input -->
                         <button onclick="decrementQuantity(${book.id})"><i class="fas fa-minus"></i></button>
                         <input type="text" id="qty-${book.id}" value="0" readonly data-price="${book.price}">
                         <button onclick="incrementQuantity(${book.id})"><i class="fas fa-plus"></i></button>
