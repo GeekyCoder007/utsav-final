@@ -1160,9 +1160,8 @@
 
     // This array acts as a dummy for Sampark Group contacts, used for dropdowns
     const dummySamparkGroupContacts = [
-        { name: 'Suhas Joglekar', mobile: '+917000000001' },
-        { name: 'Sranjay Karande', mobile: '+917000000002' },
-        { name: 'Madhavacharya Das', mobile: '+917000000003' }
+        { name: 'Suhas Joglekar', mobile: '+919850892120' },
+        { name: 'Sranjay Karande', mobile: '+919403333006'}
     ];
 
     const dummySamparkGroupContactsForHashMap = [
@@ -1257,7 +1256,7 @@
     { name: 'Somanath Govande', mobile: '+919423273516' },
     { name: 'Sandeep Anna', mobile: '+13657775858' },
     { name: 'Shrinivas Belamkar', mobile: '+917996597655' },
-    { name: 'Karande Sanjay', mobile: '+919403333006' },
+    { name: 'Karande Sranjay', mobile: '+919403333006' },
     { name: 'Radhika Gadre', mobile: '+917744909527' },
     { name: 'Kunda Phadke', mobile: '+918197781188' },
     { name: 'Smita Vaze', mobile: '+918308476507' },
@@ -1675,8 +1674,6 @@
         { name: 'Australia', code: '+61', placeholder: '412 345 678' },
         { name: 'Germany', code: '+49', placeholder: '170 1234567' },
         { name: 'France', code: '+33', placeholder: '6 12 34 56 78' },
-        { name: 'Brazil', code: '+55', placeholder: '11 91234-5678' },
-        { name: 'Mexico', code: '+52', placeholder: '55 1234 5678' },
         { name: 'China', code: '+86', placeholder: '138 0013 8000' },
         { name: 'Japan', code: '+81', placeholder: '90-1234-5678' },
         { name: 'South Africa', code: '+27', placeholder: '82 123 4567' },
@@ -2063,7 +2060,7 @@
         // Initial bot greeting message
         addInteractionElement(
             'bot-message',
-            `<span>Hello, I am Aditya Paranjape and I am here to help you with the July 2025 Pune Utsav Registration. The Utsav is held at the Swapnapoorti Hall, Pune. <a href="https://maps.app.goo.gl/YourGoogleMapsLink" target="_blank" class="text-blue-300 hover:underline">Click here</a> to see the Karyalaya venue. We are eagerly expecting you here!</span>`,
+            `<span>Hello, I am Aditya Paranjape and I am here to help you with the July 2025 Pune Utsav Registration. The Utsav is held at the Swapnapoorti Hall, Pune. <a href="https://maps.app.goo.gl/RL2yJ2LL9Z12TFef8" target="_blank" class="text-blue-300 hover:underline">Click here</a> to see the Karyalaya venue. We are eagerly expecting you here!</span>`,
             'bot-initial-greeting'
         );
         // Directly proceed to asking for mobile number
@@ -2229,7 +2226,7 @@
 
         const formHtml = `
             <h2>Sampark Group Details</h2>
-            <p>Please enter two contact numbers from a Sampark Group for validation. <span class="text-sm text-yellow-200">(Note: This validation is currently simulated and will be integrated with a database later.)</span></p>
+            <p>Please enter two contact numbers from a Sampark Group for validation. <span class="text-sm text-yellow-200">(Note: Enter the 2 numbers of from your Family / Gurubandu-Bhaginis that are participant of the sampark group. Do not include any whitespaces while filling the contact number field)</span></p>
             <div class="form-field-group">
                 <label for="sampark-ref1-country-code">Sampark Group Contact 1 (Country Code):</label>
                 ${generateCountryCodeSelectHtml('sampark-ref1-country-code', registrationData.mainRegistrant.ref1 ? registrationData.mainRegistrant.ref1.substring(0, registrationData.mainRegistrant.ref1.length - getMobileNumberOnly(registrationData.mainRegistrant.ref1).length) : '+91')}
@@ -2391,7 +2388,8 @@
         const age = memberData.age || '';
         // Extract country code from existing mobile number if available, otherwise default to +91
         const initialCountryCode = memberData.mobile ? memberData.mobile.substring(0, memberData.mobile.indexOf(memberData.mobile.match(/\d/))) : '+91';
-        const mobileNumberOnly = memberData.mobile ? memberData.mobile.substring(memberData.mobile.indexOf(memberData.mobile.match(/\d/))) : '';
+        // const mobileNumberOnly = memberData.mobile ? memberData.mobile.substring(memberData.mobile.indexOf(memberData.mobile.match(/\d/))) : '';
+        const mobileNumberOnly = memberData.mobile ? memberData.mobile.slice(-10) : '';
         const gender = memberData.gender || '';
 
         return `
@@ -3137,6 +3135,7 @@
 
         formHtml += `<button class="form-button mt-6" onclick="submitMealPreferences(this, ${memberIndex})">Submit Preferences for ${memberName}</button>`;
         const formElement = addInteractionElement('user-input-form', formHtml, formId);
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' }); // i changed this
 
         // Add Copy From Previous Section
         addCopyFromPreviousSection(formElement, memberIndex, formId);
@@ -3294,7 +3293,7 @@
                 </div>
             </div>
             <div id="assistance-dropdown-${memberIndex}" class="form-field-group ${member.localAssistance ? '' : 'hidden'}">
-                <label for="local-assistance-mode-${memberIndex}">Which person from Sampark Group can assist?</label>
+                <label for="local-assistance-mode-${memberIndex}">Which person from Sampark Group can assist? Refer To This List and Note Down The Number</label>
                 <select id="local-assistance-mode-${memberIndex}" class="w-full p-3 rounded-xl bg-[var(--form-field-bg)] border border-[var(--glass-border)] text-[var(--text-color-primary)] focus:outline-none focus:ring-2 focus:ring-white">
                     <option value="">Select Person</option>
                     ${assistanceOptionsHtml}
@@ -3435,7 +3434,7 @@
      * @param {boolean} isUpdate - True if this is an update to an existing registration.
      */
     async function saveRegistrationToDynamoDB(data) {
-        const DYNAMODB_API_ENDPOINT = 'http://localhost:8000/register'; // Update if deployed
+        const DYNAMODB_API_ENDPOINT = 'https://api.rajaram.org.in/register'; // Update if deployed
 
         try {
         const response = await fetch(DYNAMODB_API_ENDPOINT, {

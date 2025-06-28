@@ -1102,7 +1102,7 @@
 
         // --- Actual Backend API Call ---
         try {
-            const response = await fetch(`http://127.0.0.1:8000/get-registration/${registrationId}`);
+            const response = await fetch(`https://api.rajaram.org.in/get-registration/${registrationId}`);
             if (response.ok) {
                 foundRegistration = await response.json();
                 console.log('Fetched registration data from backend:', foundRegistration); // Log fetched data
@@ -1238,7 +1238,7 @@
         // If not in simulated DB, try fetching from backend
         if (!registrationData) {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/get-registration/${registrationId}`);
+                const response = await fetch(`https://api.rajaram.org.in/get-registration/${registrationId}`);
                 if (response.ok) {
                     registrationData = await response.json();
                 } else {
@@ -1417,7 +1417,7 @@
 
         if (confirmed) {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/delete-registration/${registrationId}`, {
+                const response = await fetch(`https://api.rajaram.org.in/delete-registration/${registrationId}`, {
                     method: 'DELETE' // Or 'POST' if your backend expects POST for delete and parses body
                 });
 
