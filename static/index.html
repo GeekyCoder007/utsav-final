@@ -3674,129 +3674,87 @@
      * Downloads the complete registration data as a PDF file.
      */
     async function downloadRegistrationDetails() {
-        const element = document.getElementById('ticket-confirmation-card');
-        if (!element) {
-            displayMessage('Error: Ticket element not found for PDF generation.', 'error');
-            return;
-        }
-
-        // Show loading overlay
-        pdfLoadingOverlay.classList.add('active');
-
-        // Clone the element to avoid modifying the displayed one during PDF generation
-        const clonedElement = element.cloneNode(true);
-        // Remove the download button from the cloned element for PDF
-        const downloadButtonInCloned = clonedElement.querySelector('.ticket-footer .form-button');
-        if (downloadButtonInCloned) {
-            downloadButtonInCloned.remove();
-        }
-
-        // --- Apply PDF-specific styling to the cloned element ---
-        clonedElement.style.background = 'white'; // White background for readability
-        clonedElement.style.color = '#000'; // Dark text color for general content
-        clonedElement.style.boxShadow = 'none'; // Remove shadow for print
-        clonedElement.style.border = '1px solid #666'; // Slightly darker border for definition
-        clonedElement.style.transform = 'none'; // Remove transform for print
-        clonedElement.style.borderRadius = '0.5rem'; // Keep a slight border radius
-        clonedElement.style.padding = '20px'; // Consistent padding
-
-        // Adjust header for PDF
-        const pdfHeaderH2 = clonedElement.querySelector('.ticket-header h2');
-        if (pdfHeaderH2) {
-            pdfHeaderH2.style.color = '#003366'; // Very dark blue for the main title
-            pdfHeaderH2.style.textShadow = 'none'; // Remove text shadow
-            pdfHeaderH2.style.fontSize = '2.5em'; // Make it bolder/larger
-            pdfHeaderH2.style.fontWeight = '900'; // Extra bold
-        }
-
-        // Adjust registration ID for PDF
-        const pdfRegistrationId = clonedElement.querySelector('.registration-id');
-        if (pdfRegistrationId) {
-            pdfRegistrationId.style.background = 'none'; // Remove gradient background
-            pdfRegistrationId.style.color = "black"; // Pure black text for the ID
-            pdfRegistrationId.style.border = '2px dashed #333'; // Bolder, darker dashed border
-            pdfRegistrationId.style.boxShadow = 'none'; // Remove shadow
-            pdfRegistrationId.style.fontWeight = '900'; // Ensure it's bold
-            pdfRegistrationId.style.fontSize = '2.5em'; // Ensure it's large
-        }
-
-        // Adjust sub-headers for PDF
-        clonedElement.querySelectorAll('.ticket-details h4').forEach(h4 => {
-            h4.style.color = '#003366'; // Very dark blue for sub-headers
-            h4.style.fontWeight = '700'; // Bold
-        });
-        clonedElement.querySelectorAll('.summary-attendee-card h4').forEach(h4 => {
-            h4.style.color = '#003366'; // Very dark blue for attendee names
-            h4.style.fontWeight = '700'; // Bold
-        });
-        clonedElement.querySelectorAll('.summary-attendee-card h5').forEach(h5 => {
-            h5.style.color = '#333'; // Dark grey for sub-sub-headers
-            h5.style.fontWeight = '700'; // Bold
-        });
-
-
-        // Adjust text colors for PDF
-        clonedElement.querySelectorAll('.ticket-details p span, .ticket-details ul li span').forEach(span => {
-            span.style.color = '#000'; // Ensure data values are pure black
-            span.style.fontWeight = '500'; // Slightly bold values
-        });
-        clonedElement.querySelectorAll('.ticket-details p strong, .ticket-details ul li strong').forEach(strong => {
-            strong.style.color = '#333'; // Ensure labels are dark grey
-            strong.style.fontWeight = '700'; // Bold labels
-        });
-        clonedElement.querySelectorAll('.attendee-entry p strong').forEach(strong => {
-            strong.style.color = '#333'; // Ensure labels are dark grey
-            strong.style.fontWeight = '700'; // Bold labels
-        });
-         clonedElement.querySelectorAll('.attendee-entry p span').forEach(span => {
-            span.style.color = '#000'; // Ensure data values are pure black
-            span.style.fontWeight = '500'; // Slightly bold values
-        });
-
-
-        // Adjust bullet points for PDF
-        clonedElement.querySelectorAll('.ticket-details ul li::before').forEach(before => {
-            before.style.color = '#003366'; // Very dark blue bullet points
-            before.style.fontWeight = '900'; // Make bullets bolder
-        });
-
-        // Adjust perforation lines for PDF (make them visible on white)
-        clonedElement.querySelectorAll('.ticket-confirmation-card::before, .ticket-confirmation-card::after').forEach(pseudo => {
-            // Change the radial gradient to use dark circles on transparent background
-            pseudo.style.backgroundImage = 'radial-gradient(circle at 10px 10px, transparent 9px, rgba(0,0,0,0.8) 10px)'; /* Darker circles */
-            pseudo.style.boxShadow = 'none'; // Remove shadows that might look weird on print
-        });
-
-        const ticketFooterP = clonedElement.querySelector('.ticket-footer p');
-        if (ticketFooterP) {
-            ticketFooterP.style.color = '#333'; // Dark grey for footer text
-            ticketFooterP.style.fontWeight = '500'; // Slightly bolder
-        }
-
-        // Temporarily append the cloned element to the body for correct rendering by html2pdf
-        document.body.appendChild(clonedElement);
-
-        try {
-            await html2pdf().from(clonedElement).set({
-                margin: 10,
-                filename: `GurukulUtsav_Registration_${registrationData.registrationId}.pdf`,
-                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).save();
-
-            displayMessage('Registration details downloaded as PDF!', 'success');
-        } catch (error) {
-                console.error('Error generating PDF:', error);
-                displayMessage('Failed to generate PDF. Please try again or use the text download option.', 'error');
-            } finally {
-            // Hide loading overlay
-            pdfLoadingOverlay.classList.remove('active');
-            // Remove the cloned element from the DOM
-            if (clonedElement.parentNode) {
-                clonedElement.parentNode.removeChild(clonedElement);
+    const element = document.getElementById('ticket-confirmation-card');
+    if (!element) {
+        displayMessage('Error: Ticket element not found for PDF generation.', 'error');
+        return;
+    }
+    pdfLoadingOverlay.classList.add('active');
+    const clonedElement = element.cloneNode(true);
+    const downloadButtonInCloned = clonedElement.querySelector('.ticket-footer .form-button');
+    if (downloadButtonInCloned) {
+        downloadButtonInCloned.remove();
+    }
+    Object.assign(clonedElement.style, {
+        background: '#ffffff',
+        color: '#000000',
+        boxShadow: 'none',
+        border: '1px solid #000',
+        borderRadius: '0.25rem',
+        padding: '10px',
+        margin: '0',
+        fontSize: '10px',
+        lineHeight: '1.3',
+        fontWeight: '700',
+        textShadow: '0 0 0.3px #000'
+    });
+    clonedElement.querySelectorAll('*').forEach(el => {
+        el.style.color = '#000';
+        el.style.fontWeight = '700';
+        el.style.textShadow = '0 0 0.3px #000';
+        el.style.background = 'transparent';
+        el.style.opacity = '1';
+        el.style.filter = 'none';
+        el.style.boxShadow = 'none';
+    });
+    const pdfHeaderH2 = clonedElement.querySelector('.ticket-header h2');
+    if (pdfHeaderH2) {
+        pdfHeaderH2.style.fontSize = '1.6em';
+        pdfHeaderH2.style.fontWeight = '900';
+        pdfHeaderH2.style.textShadow = '0 0 0.5px #000';
+    }
+    const pdfRegistrationId = clonedElement.querySelector('.registration-id');
+    if (pdfRegistrationId) {
+        pdfRegistrationId.style.border = '2px dashed #000';
+        pdfRegistrationId.style.padding = '5px 10px';
+        pdfRegistrationId.style.fontSize = '1.2em';
+        pdfRegistrationId.style.fontWeight = '800';
+    }
+    const ticketFooterP = clonedElement.querySelector('.ticket-footer p');
+    if (ticketFooterP) {
+        ticketFooterP.style.fontSize = '0.9em';
+        ticketFooterP.style.fontWeight = '600';
+        ticketFooterP.style.marginTop = '8px';
+    }
+    document.body.appendChild(clonedElement);
+    try {
+        await html2pdf().from(clonedElement).set({
+            margin: 10,
+            filename: `GurukulUtsav_Registration_${registrationData.registrationId}.pdf`,
+            html2canvas: {
+                scale: 3,
+                logging: true,
+                dpi: 300,
+                letterRendering: true
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait'
             }
+        }).save();
+        displayMessage('Registration details downloaded as PDF!', 'success');
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        displayMessage('Failed to generate PDF. Please try again or use the text download option.', 'error');
+    } finally {
+        pdfLoadingOverlay.classList.remove('active');
+        if (clonedElement.parentNode) {
+            clonedElement.parentNode.removeChild(clonedElement);
         }
     }
+}
+
 
   </script>
 </body>
