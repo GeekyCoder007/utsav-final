@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>View/Edit Gurukul Utsav Registrations</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- html2pdf.js CDN for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     // Ensure Tailwind is loaded before configuration
     document.addEventListener('DOMContentLoaded', function() {
@@ -646,6 +648,43 @@
         transform: translateY(0);
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
+
+    /* New CSS for PDF Loading Overlay */
+    #pdf-loading-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5em;
+        z-index: 100000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    #pdf-loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    #pdf-loading-overlay .spinner {
+        border: 8px solid rgba(255, 255, 255, 0.3);
+        border-top: 8px solid #007BFF;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 
@@ -675,6 +714,12 @@
               <button id="modal-cancel-btn" class="form-button bg-gray-500 hover:bg-gray-600">Cancel</button>
           </div>
       </div>
+  </div>
+
+  <!-- PDF Loading Overlay -->
+  <div id="pdf-loading-overlay">
+      <div class="spinner"></div>
+      <div>Generating Ticket...</div>
   </div>
 
   <div id="main-content" class="hidden relative z-10 flex items-center justify-center min-h-screen p-2 md:p-4 overflow-hidden">
@@ -756,6 +801,9 @@
     const modalMessage = document.getElementById('modal-message');
     const modalConfirmBtn = document.getElementById('modal-confirm-btn');
     const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+    // PDF Loading Overlay element
+    const pdfLoadingOverlay = document.getElementById('pdf-loading-overlay');
 
 
     // Bot Avatar Image (Placeholder - User will replace this)
@@ -1080,7 +1128,7 @@
                 displayMessage('Registration ID not found (even in simulated data).', 'error');
             }
         }
-        scrollToBottom();
+        // No need to scroll to bottom here, as displayFoundRegistrationDetails already calls it.
     }
 
     /**
@@ -1174,49 +1222,110 @@
         `;
 
         registrationDetailsArea.innerHTML = detailsHtml;
-        scrollToBottom();
+        scrollToBottom(); // Ensure the registration details section is visible
     }
 
     /**
-     * Downloads the complete registration data as a text file for a found registration.
+     * Downloads the complete registration data as a PDF for a found registration.
+     * This function now fetches the data if not already available.
      * @param {string} registrationId - The ID of the registration to download.
      */
-    function downloadRegistrationDetailsFound(registrationId) {
-        const registrationData = simulatedDynamoDB[registrationId]; // Always use simulated data for download, as backend data might not persist client-side
+    async function downloadRegistrationDetailsFound(registrationId) {
+        pdfLoadingOverlay.classList.add('active'); // Show loading spinner
+
+        let registrationData = simulatedDynamoDB[registrationId]; // Try local data first
+
+        // If not in simulated DB, try fetching from backend
+        if (!registrationData) {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/get-registration/${registrationId}`);
+                if (response.ok) {
+                    registrationData = await response.json();
+                } else {
+                    const errorText = await response.text();
+                    displayMessage(`Failed to fetch registration for download: ${response.statusText} - ${errorText}`, 'error');
+                    pdfLoadingOverlay.classList.remove('active');
+                    return;
+                }
+            } catch (error) {
+                console.error("Network or backend connection error during download fetch:", error);
+                displayMessage('Could not connect to backend to fetch data for PDF. Try again later.', 'error');
+                pdfLoadingOverlay.classList.remove('active');
+                return;
+            }
+        }
+
         if (!registrationData) {
             displayMessage('Error: Registration data not found for download.', 'error');
+            pdfLoadingOverlay.classList.remove('active');
             return;
         }
 
-        let downloadText = `--- Gurukul Utsav 2025 Registration Details ---\n`;
-        downloadText += `Registration ID: ${registrationData.registrationId}\n\n`;
+        const ticketContainer = document.createElement('div');
+        ticketContainer.id = 'downloadable-ticket'; // Unique ID for the temporary element
 
-        downloadText += `Main Registrant:\n`;
-        downloadText += `  Name: ${registrationData.mainRegistrant.firstName} ${registrationData.mainRegistrant.lastName}\n`;
-        downloadText += `  Mobile: ${registrationData.mainRegistrant.mobile}\n`;
-        downloadText += `  Reference 1: ${registrationData.mainRegistrant.ref1 || 'N/A'}\n`;
-        downloadText += `  Reference 2: ${registrationData.mainRegistrant.ref2 || 'N/A'}\n\n`;
+        // Apply styles suitable for PDF generation (white background, black text, etc.)
+        Object.assign(ticketContainer.style, {
+            background: '#ffffff',
+            color: '#000000',
+            boxShadow: 'none',
+            border: 'none', // Remove border for cleaner PDF
+            borderRadius: '0', // Remove border-radius for cleaner PDF
+            padding: '20px', // Add more padding for PDF
+            margin: '0 auto',
+            fontSize: '10px',
+            lineHeight: '1.4',
+            width: '210mm', // A4 width
+            minHeight: '297mm', // A4 height
+            boxSizing: 'border-box' // Ensure padding is included in width/height
+        });
+
+        // Helper to ensure all text within the container is black for PDF
+        const applyBlackTextStyles = el => {
+            el.querySelectorAll('*').forEach(child => {
+                child.style.color = '#000000';
+                // Reset background to transparent to avoid issues with colored backgrounds in PDF
+                child.style.backgroundColor = 'transparent';
+                child.style.backgroundImage = 'none';
+                child.style.textShadow = 'none'; // Remove text shadows
+                child.style.boxShadow = 'none'; // Remove box shadows
+            });
+            // Ensure the main container itself also has black text
+            el.style.color = '#000000';
+        };
+
+        // --- Construct PDF Content ---
+        const headerHtml = `
+            <h2 style="font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 10px; color: #000;">Gurukul Utsav 2025 Registration</h2>
+            <div style="border: 1px dashed #333; padding: 8px 15px; font-size: 18px; font-weight: bold; text-align: center; margin: 15px auto; display: inline-block; border-radius: 5px;">${registrationData.registrationId}</div>
+        `;
+        ticketContainer.innerHTML += headerHtml;
+
+        const registrantHtml = `
+            <div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee; text-align: left;">
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #000;">Main Registrant Details</h3>
+                <p><strong>Name:</strong> ${registrationData.mainRegistrant.firstName} ${registrationData.mainRegistrant.lastName}</p>
+                <p><strong>Mobile:</strong> ${registrationData.mainRegistrant.mobile}</p>
+                <p><strong>Reference 1:</strong> ${registrationData.mainRegistrant.ref1 || 'N/A'}</p>
+                <p><strong>Reference 2:</strong> ${registrationData.mainRegistrant.ref2 || 'N/A'}</p>
+            </div>
+        `;
+        ticketContainer.innerHTML += registrantHtml;
+
+        let attendeesHtml = `<div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee; text-align: left;">
+                                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #000;">Attendees (${registrationData.travelDetails.members.length})</h3>`;
 
         registrationData.travelDetails.members.forEach((member, index) => {
-            downloadText += `Attendee ${index + 1}: ${member.firstName} ${member.lastName}\n`;
-            downloadText += `  Age/Gender: ${member.age} / ${member.gender}\n`;
-            downloadText += `  Contact: ${member.mobile}\n`;
-            downloadText += `  Attending Dates: ${member.attendingDates.map(d => new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })).join(', ')}\n`;
-            downloadText += `  Travel: ${member.modeOfTransport} from ${member.cityOfOrigin} (Arrive: ${member.arrivalTime}, Depart: ${member.departureTime})\n`;
-            downloadText += `  Accommodation: ${member.stayAtHall ? 'Swapnapoorti Hall' : 'Other'}${member.stayAtHall && member.cotRequired ? ' (Cot Needed)' : ''}\n`;
-            downloadText += `  Stairs Difficulty: ${member.difficultyClimbingStairs ? 'Yes' : 'No'}\n`;
-            downloadText += `  Local Assistance: ${member.localAssistance || 'None'}\n`;
-            downloadText += `  Recordings: ${member.recordingsNeeded || 'None'}\n`;
+            const attendingDates = member.attendingDates.map(d =>
+                new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
+            ).join(', ');
 
-            downloadText += `  Morning Tea/Coffee: ${member.morningTeaCoffee.preference === 'none' ? 'None' : `${member.morningTeaCoffee.preference.charAt(0).toUpperCase() + member.morningTeaCoffee.preference.slice(1)} (Sugar: ${member.morningTeaCoffee.sugar === 'sugar' ? 'Yes' : 'No'})`}\n`;
+            const morningTeaCoffeeDisplay = member.morningTeaCoffee.preference === 'none' ? 'None' :
+                `${member.morningTeaCoffee.preference.charAt(0).toUpperCase() + member.morningTeaCoffee.preference.slice(1)} (Sugar: ${member.morningTeaCoffee.sugar === 'sugar' ? 'Yes' : 'No'})`;
 
-            downloadText += `  Meals:\n`;
-            const mealMap = {
-                breakfast: 'Breakfast',
-                lunch: 'Lunch',
-                highTea: 'High Tea',
-                dinner: 'Dinner'
-            };
+            let mealsDetailHtml = `<p style="margin-top: 10px; font-weight: bold;">Meals Per Day:</p><ul style="list-style: none; padding-left: 0; margin-top: 5px;">`;
+            const mealMap = { breakfast: 'Breakfast', lunch: 'Lunch', highTea: 'High Tea', dinner: 'Dinner' };
+
             member.attendingDates.forEach(dateYYYYMMDD => {
                 const prefs = member.mealPreferences[dateYYYYMMDD];
                 const displayDate = new Date(dateYYYYMMDD + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
@@ -1228,27 +1337,72 @@
                     }
                 }
                 const mealsStr = mealList.length > 0 ? mealList.join(', ') : 'None';
-                const teaCoffeeDisplay = (prefs && prefs.teaCoffeePreference === 'none') || !prefs ? 'None' : `${prefs.teaCoffeePreference.charAt(0).toUpperCase() + prefs.teaCoffeePreference.slice(1)} (Sugar: ${prefs.teaCoffeeSugar === 'sugar' ? 'Yes' : 'No'})`;
+                const teaCoffeePerDay = (prefs && prefs.teaCoffeePreference === 'none') || !prefs
+                    ? 'None'
+                    : `${prefs.teaCoffeePreference.charAt(0).toUpperCase() + prefs.teaCoffeePreference.slice(1)} (Sugar: ${prefs.teaCoffeeSugar === 'sugar' ? 'Yes' : 'No'})`;
+                const packedText = prefs && prefs.packedFood ? ' (Packed Meal)' : '';
 
-                downloadText += `    ${displayDate}: Meals: ${mealsStr} | Beverage: ${teaCoffeeDisplay} ${prefs && prefs.packedFood ? '| Packed Meal' : ''}\n`;
+                mealsDetailHtml += `<li style="margin-bottom: 5px;">&bull; ${displayDate}: ${mealsStr} | Beverage: ${teaCoffeePerDay}${packedText}</li>`;
             });
-            downloadText += `  Special Requests: ${member.specialRequests || 'None'}\n\n`;
+            mealsDetailHtml += `</ul>`;
+
+            attendeesHtml += `
+                <div style="border: 1px solid #ccc; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 10px; color: #000;">Attendee ${index + 1}: ${member.firstName} ${member.lastName} ${index === 0 ? '(Main)' : ''}</h4>
+                    <p><strong>Age/Gender:</strong> ${member.age} / ${member.gender}</p>
+                    <p><strong>Mobile:</strong> ${member.mobile}</p>
+                    <p><strong>Attending Dates:</strong> ${attendingDates}</p>
+                    <p><strong>Travel:</strong> ${member.modeOfTransport} from ${member.cityOfOrigin} (Arrive: ${member.arrivalDate} ${member.arrivalTime}, Depart: ${member.departureDate} ${member.departureTime})</p>
+                    <p><strong>Accommodation:</strong> ${member.stayAtHall ? 'Swapnapoorti Hall' : 'Other'}${member.stayAtHall && member.cotRequired ? ' (Cot Needed)' : ''}</p>
+                    <p><strong>Stairs Difficulty:</strong> ${member.difficultyClimbingStairs ? 'Yes' : 'No'}</p>
+                    <p><strong>Local Assistance:</strong> ${member.localAssistance || 'None'}</p>
+                    <p><strong>Recordings:</strong> ${member.recordingsNeeded || 'None'}</p>
+                    <p><strong>Morning Tea/Coffee:</strong> ${morningTeaCoffeeDisplay}</p>
+                    ${mealsDetailHtml}
+                    <p><strong>Special Requests:</strong> ${member.specialRequests || 'None'}</p>
+                </div>
+            `;
         });
+        attendeesHtml += `</div>`;
+        ticketContainer.innerHTML += attendeesHtml;
 
-        const filename = `GurukulUtsav_Registration_${registrationId}.txt`;
-        const blob = new Blob([downloadText], { type: 'text/plain;charset=utf-8' });
+        // Append the temporary container to the body (it will be removed after PDF generation)
+        document.body.appendChild(ticketContainer);
 
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
+        // Apply final text color adjustments for PDF
+        applyBlackTextStyles(ticketContainer);
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(link.href);
+        try {
+            await html2pdf().from(ticketContainer).set({
+                margin: 10,
+                filename: `GurukulUtsav_Registration_${registrationData.registrationId}.pdf`,
+                html2canvas: {
+                    scale: 2, // Adjust scale for higher quality PDF, without making it too slow
+                    logging: true,
+                    useCORS: true, // Important for images, though we are not using external images directly now
+                    dpi: 192, // Standard web dpi
+                    letterRendering: true
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+            }).save();
 
-        displayMessage('Registration details downloaded!', 'success');
+            displayMessage('Registration details downloaded as PDF!', 'success');
+        } catch (err) {
+            console.error('PDF generation failed:', err);
+            displayMessage('Failed to generate PDF. Please try again.', 'error');
+        } finally {
+            pdfLoadingOverlay.classList.remove('active'); // Hide loading spinner
+            // Remove the temporary ticket container from the DOM
+            if (ticketContainer.parentNode) {
+                ticketContainer.parentNode.removeChild(ticketContainer);
+            }
+        }
     }
+
 
     /**
      * Deletes a registration using the backend API.
