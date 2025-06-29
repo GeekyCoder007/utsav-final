@@ -2258,6 +2258,12 @@
      * Handles submission of Sampark Group reference numbers.
      * @param {HTMLButtonElement} button - The button that triggered the submission.
      */
+    
+    function normalizePhoneNumber(number) {
+        return number.replace(/[^\d+]/g, '');
+    }
+
+
     function submitSamparkGroupDetails(button) {
         const ref1Input = document.getElementById('sampark-ref1');
         const ref1CountryCode = document.getElementById('sampark-ref1-country-code');
@@ -2268,8 +2274,14 @@
         const ref2Error = document.getElementById('sampark-ref2-error');
         const formElement = button.closest('.user-input-form');
 
-        const fullRef1 = ref1CountryCode.value + ref1Input.value.trim();
-        const fullRef2 = ref2CountryCode.value + ref2Input.value.trim();
+        // const fullRef1 = ref1CountryCode.value + ref1Input.value.trim();
+        // const fullRef2 = ref2CountryCode.value + ref2Input.value.trim();
+        // const mobileRegex = /^\+?\d{1,4}\d{7,15}$/;
+
+        const rawRef1 = ref1CountryCode.value + ref1Input.value.trim();
+        const rawRef2 = ref2CountryCode.value + ref2Input.value.trim();
+        const fullRef1 = normalizePhoneNumber(rawRef1);
+        const fullRef2 = normalizePhoneNumber(rawRef2);
         const mobileRegex = /^\+?\d{1,4}\d{7,15}$/;
 
         let isValid = true;
@@ -3080,7 +3092,7 @@
                             </div>
                         </div>
                         <div class="form-field-group">
-                            <label>Tea/Coffee Preference (During meals):</label>
+                            <label>Tea/Coffee Preference (morning, breakfast and 4pm all.included):</label>
                             <div class="flex flex-wrap gap-x-4 gap-y-2"> <!-- Added flex-wrap for responsiveness -->
                                 <div class="radio-option">
                                     <input type="radio" id="tea-${memberIndex}-${dateYYYYMMDD}" name="tea-coffee-preference-${memberIndex}-${dateYYYYMMDD}" value="tea" ${defaultTeaCoffeePreference === 'tea' ? 'checked' : ''}>
@@ -3101,7 +3113,7 @@
                             </div>
                         </div>
                         <div id="sugar-question-${memberIndex}-${dateYYYYMMDD}" class="form-field-group mt-2 ${['tea', 'coffee', 'both'].includes(defaultTeaCoffeePreference) ? '' : 'hidden'}">
-                            <label>Sugar Preference (During meals):</label>
+                            <label>Sugar Preference (morning, breakfast and 4pm all.included):</label>
                             <div class="flex flex-wrap gap-x-4 gap-y-2"> <!-- Added flex-wrap for responsiveness -->
                                 <div class="radio-option">
                                     <input type="radio" id="sugar-yes-${memberIndex}-${dateYYYYMMDD}" name="tea-coffee-sugar-${memberIndex}-${dateYYYYMMDD}" value="sugar" ${defaultTeaCoffeeSugar === 'sugar' ? 'checked' : ''}>
@@ -3135,6 +3147,7 @@
 
         formHtml += `<button class="form-button mt-6" onclick="submitMealPreferences(this, ${memberIndex})">Submit Preferences for ${memberName}</button>`;
         const formElement = addInteractionElement('user-input-form', formHtml, formId);
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' }); // i changed this
         formElement.scrollIntoView({ behavior: 'smooth', block: 'start' }); // i changed this
 
         // Add Copy From Previous Section
